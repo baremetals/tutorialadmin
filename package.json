@@ -1,0 +1,30 @@
+{
+  "name": "tutorialadmin",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Tutorial app admin",
+  "scripts": {
+    "dev": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build",
+    "strapi": "strapi"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@strapi/strapi": "4.0.5",
+    "@strapi/plugin-users-permissions": "4.0.5",
+    "@strapi/plugin-i18n": "4.0.5",
+    "pg": "8.6.0"
+  },
+  "author": {
+    "name": "Daniel Asante"
+  },
+  "strapi": {
+    "uuid": "3cccac98-00c5-4968-a828-1ac736605ceb"
+  },
+  "engines": {
+    "node": ">=12.x.x <=16.x.x",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT"
+}
