@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "post_points",
+  "info": {
+    "singularName": "post-point",
+    "pluralName": "post-points",
+    "displayName": "PostPoints"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "isDecrement": {
+      "type": "boolean",
+      "default": false
+    },
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "post": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::post.post"
+    }
+  }
+}

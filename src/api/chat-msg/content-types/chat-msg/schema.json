@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "chat_msgs",
+  "info": {
+    "singularName": "chat-msg",
+    "pluralName": "chat-msgs",
+    "displayName": "ChatMsgs"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "isRead": {
+      "type": "boolean",
+      "default": false
+    },
+    "body": {
+      "type": "richtext"
+    },
+    "sender": {
+      "type": "string",
+      "required": true
+    },
+    "receiver": {
+      "type": "string",
+      "required": true
+    },
+    "chat": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::chat.chat"
+    }
+  }
+}

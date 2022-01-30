@@ -1,0 +1,32 @@
+{
+  "kind": "collectionType",
+  "collectionName": "course_videos",
+  "info": {
+    "singularName": "course-video",
+    "pluralName": "course-videos",
+    "displayName": "CourseVideos"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "isDisabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "richtext",
+      "required": true
+    },
+    "course": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::course.course"
+    }
+  }
+}

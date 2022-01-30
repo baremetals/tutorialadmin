@@ -4,7 +4,8 @@
   "info": {
     "singularName": "chat",
     "pluralName": "chats",
-    "displayName": "Chats"
+    "displayName": "Chats",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -15,6 +16,19 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user"
+    },
+    "owner": {
+      "type": "string",
+      "required": true
+    },
+    "recipient": {
+      "type": "string",
+      "required": true
+    },
+    "chat_msgs": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::chat-msg.chat-msg"
     }
   }
 }

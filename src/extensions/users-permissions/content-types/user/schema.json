@@ -76,15 +76,21 @@
       "type": "string",
       "default": "London"
     },
-    "profileImage": {
-      "type": "string"
-    },
     "backgroundImage": {
       "type": "string"
     },
     "online": {
       "type": "boolean",
       "default": false
+    },
+    "profileImage": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }

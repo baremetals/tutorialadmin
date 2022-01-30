@@ -11,10 +11,14 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "@strapi/strapi": "4.0.5",
-    "@strapi/plugin-users-permissions": "4.0.5",
+    "@strapi/plugin-graphql": "4.0.5",
     "@strapi/plugin-i18n": "4.0.5",
-    "pg": "8.6.0"
+    "@strapi/plugin-users-permissions": "4.0.5",
+    "@strapi/strapi": "4.0.5",
+    "pg": "8.6.0",
+    "socket.io": "^4.4.1",
+    "socket.io-client": "^4.4.1",
+    "strapi-plugin-socket-io": "^3.0.3"
   },
   "author": {
     "name": "Daniel Asante"
