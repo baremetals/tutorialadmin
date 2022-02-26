@@ -4,11 +4,11 @@
   "version": "0.1.0",
   "description": "Tutorial app admin",
   "scripts": {
-    "gcp-build": "strapi build",
     "dev": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
-    "strapi": "strapi"
+    "strapi": "strapi",
+    "gcp-build": "strapi build"
   },
   "devDependencies": {},
   "dependencies": {
