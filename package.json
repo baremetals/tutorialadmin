@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "description": "Tutorial app admin",
   "scripts": {
+    "gcp-build": "strapi build",
     "dev": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
@@ -14,9 +15,11 @@
     "@strapi/plugin-graphql": "4.0.6",
     "@strapi/plugin-i18n": "4.0.6",
     "@strapi/plugin-users-permissions": "4.0.6",
+    "@strapi/provider-email-sendgrid": "^4.0.7",
     "@strapi/strapi": "4.0.6",
     "pg": "8.6.0",
-    "socket.io": "^4.4.1"
+    "socket.io": "^4.4.1",
+    "strapi-provider-upload-google-cloud-storage": "^4.0.0"
   },
   "author": {
     "name": "Daniel Asante"

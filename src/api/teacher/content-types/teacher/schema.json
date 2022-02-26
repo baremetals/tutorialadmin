@@ -1,0 +1,26 @@
+{
+  "kind": "collectionType",
+  "collectionName": "teachers",
+  "info": {
+    "singularName": "teacher",
+    "pluralName": "teachers",
+    "displayName": "Teachers",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "courses": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::course.course"
+    },
+    "tutor": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}

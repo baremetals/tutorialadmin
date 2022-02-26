@@ -12,23 +12,24 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "users_permissions_user": {
+    "owner": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user"
     },
-    "owner": {
-      "type": "string",
-      "required": true
-    },
-    "recipient": {
-      "type": "string",
-      "required": true
-    },
-    "chat_msgs": {
+    "msgs": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::chat-msg.chat-msg"
+    },
+    "recipient": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "slug": {
+      "type": "uid",
+      "required": true
     }
   }
 }

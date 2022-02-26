@@ -1,11 +1,26 @@
+const url = process.env.GCS_BASE_URL
 module.exports = [
-  'strapi::errors',
-  'strapi::security',
-  'strapi::cors',
-  'strapi::poweredBy',
-  'strapi::logger',
-  'strapi::query',
-  'strapi::body',
-  'strapi::favicon',
-  'strapi::public',
+  "strapi::errors",
+  {
+    name: "strapi::security",
+    config: {
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          "connect-src": ["'self'", "https:"],
+          "img-src": ["'self'", "data:", "blob:", url],
+          "media-src": ["'self'", "data:", "blob:", url],
+          upgradeInsecureRequests: null,
+        },
+      },
+    },
+  },
+  
+  "strapi::cors",
+  "strapi::poweredBy",
+  "strapi::logger",
+  "strapi::query",
+  "strapi::body",
+  "strapi::favicon",
+  "strapi::public",
 ];

@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "support_messages",
+  "info": {
+    "singularName": "support-message",
+    "pluralName": "support-messages",
+    "displayName": "Support-Messages"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "subject": {
+      "type": "string"
+    },
+    "body": {
+      "type": "text",
+      "required": true
+    },
+    "username": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "fullName": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    }
+  }
+}

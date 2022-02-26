@@ -4,7 +4,8 @@
   "info": {
     "singularName": "chat-msg",
     "pluralName": "chat-msgs",
-    "displayName": "ChatMsgs"
+    "displayName": "ChatMsgs",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -16,20 +17,22 @@
       "default": false
     },
     "body": {
-      "type": "richtext"
-    },
-    "sender": {
-      "type": "string",
-      "required": true
-    },
-    "receiver": {
-      "type": "string",
-      "required": true
+      "type": "text"
     },
     "chat": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::chat.chat"
+    },
+    "sender": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "receiver": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
     }
   }
 }

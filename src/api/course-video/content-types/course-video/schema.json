@@ -4,7 +4,8 @@
   "info": {
     "singularName": "course-video",
     "pluralName": "course-videos",
-    "displayName": "CourseVideos"
+    "displayName": "CourseVideos",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -27,6 +28,10 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::course.course"
+    },
+    "video_url": {
+      "type": "string",
+      "required": true
     }
   }
 }

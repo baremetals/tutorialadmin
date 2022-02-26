@@ -23,7 +23,7 @@
       "type": "boolean",
       "default": false
     },
-    "views": {
+    "total_comments": {
       "type": "integer",
       "default": 0
     },
@@ -33,10 +33,6 @@
     },
     "body": {
       "type": "richtext"
-    },
-    "creator": {
-      "type": "string",
-      "required": true
     },
     "comments": {
       "type": "relation",
@@ -52,6 +48,11 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::post-point.post-point"
+    },
+    "creator": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
     }
   }
 }

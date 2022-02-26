@@ -67,7 +67,8 @@
       "type": "string"
     },
     "slug": {
-      "type": "uid"
+      "type": "uid",
+      "required": true
     },
     "description": {
       "type": "text"
@@ -76,21 +77,52 @@
       "type": "string",
       "default": "London"
     },
-    "backgroundImage": {
-      "type": "string"
-    },
     "online": {
       "type": "boolean",
       "default": false
     },
-    "profileImage": {
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos"
-      ],
-      "type": "media",
-      "multiple": false
+    "teacher": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::teacher.teacher"
+    },
+    "student": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::student.student"
+    },
+    "posts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::post.post"
+    },
+    "comments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::comment.comment"
+    },
+    "notifications": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::notification.notification"
+    },
+    "img": {
+      "type": "string",
+      "default": "https://storage.googleapis.com/baremets_tutor/default_4bbd2a07e9/default_4bbd2a07e9.jpg?updated_at=2022-02-09T20:23:20.441Z"
+    },
+    "backgroundImg": {
+      "type": "string",
+      "default": "https://storage.googleapis.com/baremets_tutor/background_e44f188732/background_e44f188732.jpg?updated_at=2022-02-09T20:23:42.358Z"
+    },
+    "ownerChats": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::chat.chat"
+    },
+    "recipientChats": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::chat.chat"
     }
   }
 }

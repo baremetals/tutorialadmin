@@ -4,7 +4,8 @@
   "info": {
     "singularName": "notification",
     "pluralName": "notifications",
-    "displayName": "Notifications"
+    "displayName": "Notifications",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -13,15 +14,6 @@
   "attributes": {
     "from": {
       "type": "string"
-    },
-    "image": {
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos"
-      ],
-      "type": "media",
-      "multiple": false
     },
     "isRead": {
       "type": "boolean",
@@ -36,10 +28,13 @@
     "type": {
       "type": "string"
     },
-    "users_permissions_user": {
+    "user": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user"
+    },
+    "image": {
+      "type": "string"
     }
   }
 }

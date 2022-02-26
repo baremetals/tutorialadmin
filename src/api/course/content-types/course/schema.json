@@ -4,7 +4,8 @@
   "info": {
     "singularName": "course",
     "pluralName": "courses",
-    "displayName": "Courses"
+    "displayName": "Courses",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -13,6 +14,7 @@
   "attributes": {
     "slug": {
       "type": "uid",
+      "required": true,
       "targetField": "title"
     },
     "title": {
@@ -33,13 +35,14 @@
       "type": "string"
     },
     "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
     "startDate": {
       "type": "datetime",
@@ -50,7 +53,8 @@
       "required": true
     },
     "totalStudents": {
-      "type": "integer"
+      "type": "integer",
+      "default": 0
     },
     "totalLessons": {
       "type": "integer",
@@ -61,14 +65,20 @@
       "relation": "oneToMany",
       "target": "api::category.category"
     },
-    "users_permissions_users": {
+    "teacher": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::teacher.teacher"
+    },
+    "course_videos": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "plugin::users-permissions.user"
+      "target": "api::course-video.course-video"
     },
-    "teacher": {
-      "type": "string",
-      "required": true
+    "students": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::student.student"
     },
     "admin_user": {
       "type": "relation",

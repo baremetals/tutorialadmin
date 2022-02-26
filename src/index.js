@@ -1,11 +1,15 @@
 'use strict';
 const {
-  findUser,
-  createUser,
-  deleteUser,
-  userExists,
-  getUsersInRoom
-} = require('../config/utils');
+  getUser,
+  getUserByUsername,
+  createNewChat,
+  respondToChat,
+  existingChat,
+  editChatMsg,
+  editChatMsgRead,
+  deleteChatMsg,
+  deleteChat,
+} = require("../config/utils");
 
 module.exports = {
   
@@ -24,7 +28,9 @@ module.exports = {
           definition(t) {
             // here define fields you need
             t.string("slug");
-            t.string("profile_image");
+            t.string("backgroundImg");
+            t.string("img");
+            // console.log(t)
           },
         }),
       ],
@@ -43,88 +49,147 @@ module.exports = {
     const io = new Server(strapi.server.httpServer, {
       cors: {
         origin: process.env.FRONT_END_HOST,
-        methods: ['GET', 'POST'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['my-custom-header'],
         credentials: true
       }
     });
     io.on('connection', function (socket) {
-      socket.on('join', async ({ username, room }, callback) => {
-        try {
-          const userExists = await findUser(username, room);
-          if (userExists) {
-            callback(`User ${username} already exists in room no${room}. Please select a different name or room`);
-          } else {
-            const user = await createUser({
-              username: username,
-              room: room,
-              status: 'ONLINE',
-              socketId: socket.id
-            });
+      console.log("Socket is alive");
+      // Creating a new chat message
+      // socket.on("getChatMsgs", async ({ owner, recipient, body }, callback) => {
+      //   console.log("creating new chat");
+      //   try {
+      //     const chat = await existingChat(owner, recipient);
+      //     if (chat) {
+      //       const msg = await respondToChat(owner, chat.id, body);
+      //       io.emit("message", msg);
+      //     } else {
+      //       const newChat = await createNewChat(
+      //         data.owner,
+      //         chat.user.id,
+      //         data.body
+      //       );
+      //       io.emit("message", newChat);
+      //     }
+      //     callback();
+      //   } catch (err) {
+      //     console.log("err inside catch block", err);
+      //   }
+      // });
 
-            if (user) {
-              socket.join(user.room);
-              socket.emit('welcome', {
-                user: 'Bot',
-                text: `${user.username}, Welcome to room ${user.room}.`,
-                userData: user
-              });
-              socket.broadcast.to(user.room).emit('message', {
-                user: 'Bot',
-                text: `${user.username} has joined`,
-              });
-              io.to(user.room).emit('roomInfo', {
-                room: user.room,
-                users: await getUsersInRoom(user.room)
-              });
+      // Creating a new chat message
+      socket.on("createChat", async ({ owner, username, body, slug }, callback) => {
+        console.log("creating new chat", );
+        try {
+          const chat = await existingChat(username, slug);
+          // console.log(chat)
+          if (chat.entry !== null) {
+            const msg = await respondToChat(owner, chat.id, body, slug);
+            io.emit("msg", msg);
+          } else {
+            // console.log(chat.user, " i am living")
+            if (chat.user !== null) {
+              console.log("user I am here")
+              const newChat = await createNewChat(
+                owner,
+                chat.user.id,
+                body,
+                slug
+              );
+              // console.log(newChat);
+              io.emit("chat", newChat);
             } else {
-              callback('user could not be created. Try again!');
+              callback("No user found");
             }
           }
           callback();
         } catch (err) {
-          console.log('Err occured, Try again!', err);
-        }
-      });
-      socket.on('sendMessage', async (data, callback) => {
-        try {
-          const user = await userExists(data.userId);
-          if (user) {
-            io.to(user.room).emit('message', {
-              user: user.username,
-              text: data.message,
-            });
-            io.to(user.room).emit('roomInfo', {
-              room: user.room,
-              users: await getUsersInRoom(user.room)
-            });
-          } else {
-            callback('User doesn\'t exist in the database. Rejoin the chat');
-          }
-          callback();
-        } catch (err) {
-          console.log('err inside catch block', err);
+          console.log("err inside catch block", err);
         }
       });
 
-      socket.on('disconnect', async (data) => {
+      // Responding a message
+      socket.on("respondToChat", async ({ sender, chatId, body }, callback) => {
+        console.log("responding a message");
         try {
-          console.log('DISCONNECTED!!!!!!!!!!!!');
-          const user = await deleteUser(socket.id);
+          const user = await getUser(sender);
           if (user) {
-            io.to(user.room).emit('message', {
-              user: user.username,
-              text: `User ${user.username} has left the chat.`,
-            });
-            io.to(user.room).emit('roomInfo', {
-              room: user.room,
-              users: await getUsersInRoom(user.room)
-            });
+            const msg = await respondToChat(sender, chatId, body);
+            io.emit("message", msg);
+          } else {
+            callback("No user found");
           }
+          callback();
         } catch (err) {
-          console.log('error while disconnecting', err);
+          console.log("err inside catch block", err);
         }
       });
+
+      // Editing a message body
+      socket.on("editChatMsgBody", async (data, callback) => {
+        console.log("editing a message");
+        try {
+          const user = await getUser(data.userId);
+          if (user) {
+            const msg = await editChatMsg(data.msg, data.body);
+            io.emit("message", msg);
+          } else {
+            callback("No user found");
+          }
+          callback();
+        } catch (err) {
+          console.log("err inside catch block", err);
+        }
+      });
+
+      // Editing message isRead field
+      socket.on("editChatMsgIsRead", async (data, callback) => {
+        console.log("editing a message isRead field");
+        try {
+          const user = await getUser(data.userId);
+          if (user) {
+            const msg = await editChatMsgRead(data.msg, data.isRead);
+            io.emit("message", msg);
+          } else {
+            callback("No user found");
+          }
+          callback();
+        } catch (err) {
+          console.log("err inside catch block", err);
+        }
+      });
+
+      // Deleting a message
+      socket.on("deleteChatMsg", async (data, callback) => {
+        console.log("deleting a message");
+        try {
+          const user = await getUser(data.userId);
+          if (user) {
+            await deleteChatMsg(data.chatId);
+          } else {
+            callback("No user found");
+          }
+        } catch (err) {
+          console.log("err inside catch block", err);
+        }
+      });
+
+      // Deleting a chat conversation
+      // socket.on("disconnect", async (data) => {
+      //   console.log("deleting a chat conversation");
+      //   try {
+      //     console.log("DISCONNECTED!!!!!!!!!!!!");
+      //     const user = await getUser(data.userId);
+      //     if (user) {
+      //       await deleteChat(data.chatId);
+      //     } else {
+      //       callback("No user found");
+      //     }
+      //   } catch (err) {
+      //     console.log("error while disconnecting", err);
+      //   }
+      // });
     });
   },
 }
