@@ -6,7 +6,7 @@ module.exports = ({ env }) => ({
         bucketName: env("GCS_BUCKET_NAME"),
         publicFiles: env("GCS_PUBLIC_FILES"),
         uniform: env("GCS_UNIFORM"),
-        serviceAccount: ('storagedb.json'),
+        // serviceAccount: ('storagedb.json'),
         // ({
         //   type: env("GCS_TYPE"),
         //   project_id: env("GCS_PROJECT_ID"),
