@@ -4,3 +4,8 @@
 node_modules/
 #!include:.gitignore
 !.env
+.env
+.env.example
+.strapi-updater.json
+.cache
+.build
