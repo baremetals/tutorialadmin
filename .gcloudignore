@@ -9,3 +9,4 @@ node_modules/
 .strapi-updater.json
 .cache
 .build
+cloud_sql_proxy
