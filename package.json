@@ -12,11 +12,11 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "@strapi/plugin-graphql": "4.0.6",
-    "@strapi/plugin-i18n": "4.0.6",
-    "@strapi/plugin-users-permissions": "4.0.6",
+    "@strapi/plugin-graphql": "4.1.1",
+    "@strapi/plugin-i18n": "4.1.1",
+    "@strapi/plugin-users-permissions": "4.1.1",
     "@strapi/provider-email-sendgrid": "^4.0.7",
-    "@strapi/strapi": "4.0.6",
+    "@strapi/strapi": "4.1.1",
     "pg": "8.6.0",
     "socket.io": "^4.4.1",
     "strapi-provider-upload-google-cloud-storage": "^4.0.0"
@@ -29,7 +29,7 @@
   },
   "engines": {
     "node": ">=12.x.x <=16.x.x",
-    "npm": ">=6.0.0"
+    "npm": ">=7.19.0"
   },
   "license": "MIT"
 }
