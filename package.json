@@ -1,5 +1,5 @@
 {
-  "name": "tutorialadmin",
+  "name": "baremetals-admin",
   "private": true,
   "version": "0.1.0",
   "description": "Tutorial app admin",
@@ -7,8 +7,7 @@
     "dev": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
-    "strapi": "strapi",
-    "gcp-build": "strapi build"
+    "strapi": "strapi"
   },
   "devDependencies": {},
   "dependencies": {
@@ -29,7 +28,7 @@
   },
   "engines": {
     "node": ">=12.x.x <=16.x.x",
-    "npm": ">=7.19.0"
+    "npm": ">=6.0.0"
   },
   "license": "MIT"
 }
