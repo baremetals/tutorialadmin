@@ -1,5 +1,7 @@
 'use strict';
 
+
+
 module.exports = {
   
   /**
@@ -17,5 +19,33 @@ module.exports = {
    * This gives you an opportunity to set up your data model,
    * run jobs, or perform some special logic.
    */
-  bootstrap(/*{ strapi }*/) {},
+  bootstrap(/*{ strapi }*/) {
+    strapi.db.lifecycles.subscribe({
+      models: ["plugin::users-permissions.user"],
+      async afterCreate(event) {
+        // afterCreate lifeclcyle
+      },
+      async beforeCreate(event) {
+        // beforeCreate lifeclcyle
+      },
+
+      async beforeFindOne(event) {
+        // beforeFindOne lifeclcyle
+      },
+      async afterFindOne(event) {
+        const { result, params } = event;
+        if (params.where.provider) {
+          await strapi.entityService.update(
+            "plugin::users-permissions.user",
+            result.id,
+            {
+              data: {
+                online: true,
+              },
+            }
+          );
+        }
+      },
+    });
+  },
 }
