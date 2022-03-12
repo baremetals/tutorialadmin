@@ -1,5 +1,3 @@
-// const forgotPasswordTemplate = require("./email-templates/forgot_password");
-
 module.exports = ({ env }) => ({
   apiToken: {
     salt: env("API_TOKEN_SALT"),
@@ -7,10 +5,4 @@ module.exports = ({ env }) => ({
   auth: {
     secret: env("ADMIN_JWT_SECRET"),
   },
-
-  // forgotPassword: {
-  //   from: env("EMAIL_FROM"),
-  //   replyTo: env("EMAIL_FROM"),
-  //   emailTemplate: forgotPasswordTemplate,
-  // },
 });
