@@ -1,4 +1,4 @@
-const url = process.env.GCS_BASE_URL
+const url = process.env.GCS_URL
 module.exports = [
   "strapi::errors",
   {

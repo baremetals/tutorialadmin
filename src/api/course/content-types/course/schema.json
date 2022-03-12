@@ -84,6 +84,14 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "admin::user"
+    },
+    "SEO": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.seo"
+    },
+    "introduction": {
+      "type": "text"
     }
   }
 }

@@ -305,6 +305,48 @@ module.exports = (plugin) => {
     });
   }
 
+  plugin.controllers.auth.sendEmailConfirmation = async (ctx) => {
+    console.log("I am going ta rass" ,ctx.req.data)
+
+    const params = _.assign(ctx.request.body);
+
+    await validateSendEmailConfirmationBody(params);
+
+    const isEmail = emailRegExp.test(params.email);
+
+    if (isEmail) {
+      params.email = params.email.toLowerCase();
+    } else {
+      throw new ValidationError("wrong.email");
+    }
+
+    const user = await strapi.query("plugin::users-permissions.user").findOne({
+      where: { email: params.email },
+    });
+
+    if (!user) {
+      throw new ApplicationError("This email address is not registered");
+    }
+
+    if (user.confirmed) {
+      throw new ApplicationError("already.confirmed");
+    }
+
+    if (user.blocked) {
+      throw new ApplicationError("blocked.user");
+    }
+
+    try {
+      await sendConfirmationEmail(user);
+      ctx.send({
+        email: user.email,
+        sent: true,
+      });
+    } catch (err) {
+      throw new ApplicationError(err.message);
+    }
+  }
+
   return plugin;
 };
 

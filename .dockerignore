@@ -1,0 +1,11 @@
+node_modules
+.cache
+build
+*.md
+!README*.md
+README-secret.md
+*.example*
+.eslint*
+.editorconfig
+.env.example
+.strapi-updater.json
