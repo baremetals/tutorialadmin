@@ -55,8 +55,8 @@ module.exports = createCoreController("api::chat.chat", ({ strapi }) => ({
         
     })
     // console.log(entity);
-    const sanitizedEntity = await this.sanitizeOutput(entity, ctx);
+      const sanitizedEntity = await this.sanitizeOutput(entity, ctx);
 
-    return this.transformResponse(sanitizedEntity);
+      return this.transformResponse(sanitizedEntity);
   },
 }));

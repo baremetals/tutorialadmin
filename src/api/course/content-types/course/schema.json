@@ -46,11 +46,11 @@
     },
     "startDate": {
       "type": "datetime",
-      "required": true
+      "required": false
     },
     "endDate": {
       "type": "datetime",
-      "required": true
+      "required": false
     },
     "totalStudents": {
       "type": "integer",
@@ -92,6 +92,45 @@
     },
     "introduction": {
       "type": "text"
+    },
+    "courseType": {
+      "type": "enumeration",
+      "enum": [
+        "group",
+        "single"
+      ],
+      "required": false,
+      "default": "group"
+    },
+    "level": {
+      "type": "enumeration",
+      "enum": [
+        "Beginner",
+        "Intermediate",
+        "Advance"
+      ],
+      "required": true
+    },
+    "soloPrice": {
+      "type": "decimal",
+      "required": false,
+      "default": 0
+    },
+    "price": {
+      "type": "decimal",
+      "required": true,
+      "default": 0
+    },
+    "isFree": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order.order",
+      "mappedBy": "course"
     }
   }
 }
