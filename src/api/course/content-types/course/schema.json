@@ -92,6 +92,33 @@
     },
     "introduction": {
       "type": "text"
+    },
+    "level": {
+      "type": "enumeration",
+      "enum": [
+        "Beginner",
+        "Intermediate",
+        "Advance"
+      ]
+    },
+    "courseType": {
+      "type": "enumeration",
+      "enum": [
+        "group",
+        "single"
+      ]
+    },
+    "soloPrice": {
+      "type": "decimal"
+    },
+    "price": {
+      "type": "decimal",
+      "required": true
+    },
+    "isFree": {
+      "type": "boolean",
+      "default": false,
+      "required": true
     }
   }
 }
