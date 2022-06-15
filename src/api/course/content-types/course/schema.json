@@ -75,11 +75,6 @@
       "relation": "oneToMany",
       "target": "api::course-video.course-video"
     },
-    "students": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::student.student"
-    },
     "admin_user": {
       "type": "relation",
       "relation": "oneToOne",
@@ -119,6 +114,17 @@
       "type": "boolean",
       "default": false,
       "required": true
+    },
+    "orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order.order",
+      "mappedBy": "course"
+    },
+    "students": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
     }
   }
 }
