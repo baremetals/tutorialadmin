@@ -115,3 +115,5 @@ exports
 build
 .strapi-updater.json
 storagedb.json
+app.yaml
+/terraform
