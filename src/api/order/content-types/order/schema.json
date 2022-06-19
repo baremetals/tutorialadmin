@@ -18,9 +18,12 @@
     "status": {
       "type": "enumeration",
       "enum": [
+        "free",
         "paid",
         "unpaid"
-      ]
+      ],
+      "required": true,
+      "default": "free"
     },
     "total": {
       "type": "decimal",
@@ -49,6 +52,18 @@
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "orders"
+    },
+    "imageUrl": {
+      "type": "string",
+      "required": true
+    },
+    "orderType": {
+      "type": "string",
+      "required": true,
+      "default": "group"
+    },
+    "courseId": {
+      "type": "integer"
     }
   }
 }

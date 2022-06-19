@@ -46,11 +46,11 @@
     },
     "startDate": {
       "type": "datetime",
-      "required": true
+      "required": false
     },
     "endDate": {
       "type": "datetime",
-      "required": true
+      "required": false
     },
     "totalStudents": {
       "type": "integer",
@@ -101,7 +101,9 @@
       "enum": [
         "group",
         "single"
-      ]
+      ],
+      "default": "group",
+      "required": true
     },
     "soloPrice": {
       "type": "decimal"
@@ -125,6 +127,11 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "plugin::users-permissions.user"
+    },
+    "lectures": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::lecture.lecture"
     }
   }
 }
