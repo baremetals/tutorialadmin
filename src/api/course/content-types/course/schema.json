@@ -91,6 +91,7 @@
     "level": {
       "type": "enumeration",
       "enum": [
+        "Primer",
         "Beginner",
         "Intermediate",
         "Advance"

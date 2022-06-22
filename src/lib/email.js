@@ -383,7 +383,7 @@ async function sendMail({
                 <td valign="middle" width="20%" style="padding-top:0px; text-align: right;">
                 	<ul style="" class="social">
                         <li style="margin-bottom:0; vertical-align: middle; padding:0 4px"><a href="https://www.linkedin.com/in/daniel-asante-205504127/"><img src="https://storage.googleapis.com/baremets_tutor/linkedin_icon_06d65d8cd9/linkedin_icon_06d65d8cd9.png?updated_at=2022-02-24T12:58:26.690Z" alt="linkedin icon" style="width:18px;"  /></a></li>
-                         <li style="margin-bottom:0; vertical-align: middle; padding:0 4px"><a href="https://twitter.com/bare_academy"><img src="https://storage.googleapis.com/baremets_tutor/twitter_icon_59c92aac4b/twitter_icon_59c92aac4b.png?updated_at=2022-02-24T12:58:40.344Z" alt="twitter icon" style="width:18px;" /></a></li>
+                         <li style="margin-bottom:0; vertical-align: middle; padding:0 4px"><a href="https://twitter.com/bareacademy_"><img src="https://storage.googleapis.com/baremets_tutor/twitter_icon_59c92aac4b/twitter_icon_59c92aac4b.png?updated_at=2022-02-24T12:58:40.344Z" alt="twitter icon" style="width:18px;" /></a></li>
                     </ul>
                 </td>
               </tr>

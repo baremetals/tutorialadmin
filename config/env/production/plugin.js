@@ -38,5 +38,8 @@ module.exports = ({ env }) => ({
       },
     },
   },
+
+  // CK Editor
+  ckeditor: true,
   //...
 });

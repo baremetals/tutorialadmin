@@ -8,7 +8,7 @@ module.exports = ({ env }) => ({
         publicFiles: env("GCS_PUBLIC_FILES"),
         uniform: env("GCS_UNIFORM"),
         serviceAccount: storagedb,
-        // serviceAccount: env.json("GCSP_SERVICE_ACCOUNT"),
+        //serviceAccount: env.json("GCSP_SERVICE_ACCOUNT"),
         baseUrl: env("GCS_BASE_URL"),
         basePath: env("GCS_BASE_PATH"),
       },
@@ -40,5 +40,8 @@ module.exports = ({ env }) => ({
       },
     },
   },
+
+  // CK Editor
+  ckeditor: true,
   //...
 });

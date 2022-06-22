@@ -391,8 +391,9 @@ const html = `
 </html>
 `;
 
-const text = `Hi <%= User.username %>
+const text = `Hi <%= user.username %>
 Sorry you lost your password. You can click here to reset it: <%= URL %>`;
+
 
 module.exports = {
   subject,
