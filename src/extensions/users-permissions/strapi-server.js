@@ -240,9 +240,9 @@ module.exports = (plugin) => {
         params.confirmed = true;
       }
 
-      const user = await getService("user").add(params);
+      const usr = await getService("user").add(params);
 
-      const sanitizedUser = await sanitizeUser(user, ctx);
+      const sanitizedUser = await sanitizeUser(usr, ctx);
 
       if (settings.email_confirmation) {
         try {
@@ -254,7 +254,7 @@ module.exports = (plugin) => {
         return ctx.send({ user: sanitizedUser });
       }
 
-      const jwt = getService("jwt").issue(_.pick(user, ["id"]));
+      const jwt = getService("jwt").issue(_.pick(usr, ["id"]));
 
       return ctx.send({
         jwt,
@@ -273,7 +273,7 @@ module.exports = (plugin) => {
   }
 
   const sendConfirmationEmail = async (user) => {
-    console.log(user, "I am in this bitch");
+    // console.log(user, "I am in this bitch");
 
     const userPermissionService = getService("users-permissions");
     const pluginStore = await strapi.store({

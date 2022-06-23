@@ -1,5 +1,6 @@
 "use strict";
 const stripe = require("stripe")(process.env.STRIPE_SK);
+const sgMail = require("@sendgrid/mail");
 
 const fromDecimalToInt = (number) => parseInt(number * 100);
 /**
@@ -26,7 +27,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
     if (!course) {
       return ctx.throw(400, "The course does not exist");
     }
-
+    
     const { user } = ctx.state;
 
     if (course.students.length > 0) {
@@ -53,7 +54,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
     //   }
     // }
 
-
+    
     let session;
 
     if (!data.isFree && data.total > 0) {
@@ -79,7 +80,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
         ],
       });
     } else session = "free-purchase";
-
+    // console.log("here times");
     // Create the order
     const order = await strapi.service("api::order.order").create({
       data: {
@@ -95,7 +96,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
         publishedAt: Date.now(),
       },
     });
-
+    
     await strapi.service("api::course.course").update(course.id, {
       data: {
         orders: course.orders.concat(order.id),
@@ -103,16 +104,39 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
         TotalStudents: course.TotalStudents + 1,
       },
     });
+    
+    const emailTemplate = {
+      to: `${user.email}`, // recipient
+      from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender
+      template_id: "d-5ac156026533444c9c559dc29368f392",
+      dynamic_template_data: {
+        courseTitle: course.title,
+        subject: `Order Received`,
+        username: `${user.username}`,
+        message: data.isFree
+          ? "Your order has been processed. You will receive details of the course by email."
+          : "Your order is being processed. You will receive payment confirmation shortly.",
+      },
+    };
+    
+    await sgMail
+      .send(emailTemplate)
+      .then(() => {
+        console.log("Email sent");
+      })
+      .catch((error) => {
+        console.log(`Sending the verify email produced this error: ${error}`);
+      });
 
     return { id: data.isFree ? session : session.id };
   },
 
   async confirm(ctx, next) {
     const { checkout_session } = ctx.request.body;
-    console.log(ctx.request.body);
+    // console.log(ctx.request.body);
     const entity = await strapi.db
       .query("api::order.order")
-      .findOne({ where: { checkout_session } });
+      .findOne({ where: { checkout_session }, populate: { user: true, course: true} });
     // console.log(checkout_session);
 
     const session = await stripe.checkout.sessions.retrieve(checkout_session);
@@ -126,6 +150,26 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
           },
         });
       const sanitizedEntity = await this.sanitizeOutput(updateOrder, ctx);
+
+      const emailTemplate = {
+        to: `${entity.user.email}`, // recipient
+        from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender
+        template_id: "d-dc568a7640d04041ab45c6d233cd0de1",
+        dynamic_template_data: {
+          courseTitle: entity.course.title,
+          subject: `Payment Confirmation`,
+          username: `${entity.user.username}`,
+        },
+      };
+
+      await sgMail
+        .send(emailTemplate)
+        .then(() => {
+          console.log("Email sent");
+        })
+        .catch((error) => {
+          console.log(`Sending the verify email produced this error: ${error}`);
+        });
       return this.transformResponse(sanitizedEntity);
     } else {
       ctx.throw(400, "Payment was not successful please try again");
