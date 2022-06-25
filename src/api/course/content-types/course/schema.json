@@ -75,11 +75,6 @@
       "relation": "oneToMany",
       "target": "api::course-video.course-video"
     },
-    "students": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::student.student"
-    },
     "admin_user": {
       "type": "relation",
       "relation": "oneToOne",
@@ -93,33 +88,30 @@
     "introduction": {
       "type": "text"
     },
+    "level": {
+      "type": "enumeration",
+      "enum": [
+        "Primer",
+        "Beginner",
+        "Intermediate",
+        "Advance"
+      ]
+    },
     "courseType": {
       "type": "enumeration",
       "enum": [
         "group",
         "single"
       ],
-      "required": false,
-      "default": "group"
-    },
-    "level": {
-      "type": "enumeration",
-      "enum": [
-        "Beginner",
-        "Intermediate",
-        "Advance"
-      ],
+      "default": "group",
       "required": true
     },
     "soloPrice": {
-      "type": "decimal",
-      "required": false,
-      "default": 0
+      "type": "decimal"
     },
     "price": {
       "type": "decimal",
-      "required": true,
-      "default": 0
+      "required": true
     },
     "isFree": {
       "type": "boolean",
@@ -131,6 +123,16 @@
       "relation": "oneToMany",
       "target": "api::order.order",
       "mappedBy": "course"
+    },
+    "students": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
+    },
+    "lectures": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::lecture.lecture"
     }
   }
 }
