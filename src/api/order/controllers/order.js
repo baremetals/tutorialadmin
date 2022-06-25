@@ -34,7 +34,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
       const users = course.students;
 
       const or = users.filter((u) => u.id === user.id);
-      console.log('or');
+      // console.log('or');
       if (or.length > 0) {
         return ctx.throw(400, "You previously purchased this course");
       }
@@ -65,7 +65,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
         customer_email: user.email,
         mode: "payment",
         success_url: `${BASE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: BASE_URL,
+        cancel_url: `${BASE_URL}/cancel-payment?session_id={CHECKOUT_SESSION_ID}`,
         line_items: [
           {
             price_data: {
@@ -101,7 +101,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
       data: {
         orders: course.orders.concat(order.id),
         students: course.students.concat(user.id),
-        TotalStudents: course.TotalStudents + 1,
+        totalStudents: course.totalStudents + 1,
       },
     });
     
@@ -131,13 +131,35 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
     return { id: data.isFree ? session : session.id };
   },
 
-  async confirm(ctx, next) {
-    const { checkout_session } = ctx.request.body;
-    // console.log(ctx.request.body);
+  async confirm(ctx, _next) {
+    const { checkout_session, cancel } = ctx.request.body;
+
     const entity = await strapi.db
       .query("api::order.order")
       .findOne({ where: { checkout_session }, populate: { user: true, course: true} });
-    // console.log(checkout_session);
+
+    const course = await strapi.db.query("api::course.course").findOne({
+      where: { id: entity.course.id },
+      populate: { students: true },
+    });
+
+    if (cancel) {
+      await strapi
+        .service("api::order.order")
+        .delete(entity.id);
+
+      const index = course.students.findIndex((st) => st.id === entity.user.id);
+      await strapi
+        .service("api::course.course")
+        .update(entity.course.id, {
+          data: {
+            students: course.students.splice(index, 1),
+            totalStudents: course.totalStudents - 1,
+          },
+        });
+
+      return {success: 'order deleted'};
+    }
 
     const session = await stripe.checkout.sessions.retrieve(checkout_session);
 

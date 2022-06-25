@@ -38,7 +38,6 @@ module.exports = (plugin) => {
   plugin.controllers.auth.forgotPassword = async (ctx) => {
     let { email } = ctx.request.body;
 
-
     // Check if the provided email is valid or not.
     const isEmail = emailRegExp.test(email);
 
@@ -98,7 +97,7 @@ module.exports = (plugin) => {
       }
     );
     
-    console.log(email, "my nigger");
+    // console.log(email, "my nigger");
 
     settings.object = await getService("users-permissions").template(
       settings.object,
@@ -106,8 +105,7 @@ module.exports = (plugin) => {
         USER: userInfo,
       }
     );
-      console.log(email, "real nigger");
-
+      // console.log(email, "real nigger");
       const emailTemplate = {
         to: `${user.email}`, // recipient
         from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender

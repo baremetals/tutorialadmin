@@ -30,7 +30,7 @@ module.exports = ({ env }) => ({
     config: {
       provider: env("EMAIL_PROVIDER"),
       providerOptions: {
-        apiKey: env("EMAIL_API_KEY"),
+        apiKey: env("SENDGRID_API_KEY"),
       },
       settings: {
         defaultFrom: env("EMAIL_FROM"),
