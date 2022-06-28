@@ -17,7 +17,6 @@ module.exports = ({ env }) => ({
       endpoint: "/graphql",
       shadowCRUD: true,
       playgroundAlways: false,
-      depthLimit: 7,
       amountLimit: 100,
       apolloServer: {
         tracing: false,
@@ -26,15 +25,17 @@ module.exports = ({ env }) => ({
   },
 
   // EMAILS
+
   email: {
     config: {
       provider: env("EMAIL_PROVIDER"),
       providerOptions: {
-        apiKey: env("SENDGRID_API_KEY"),
+        apiKey: env("EMAIL_API_KEY"),
       },
       settings: {
         defaultFrom: env("EMAIL_FROM"),
         defaultReplyTo: env("EMAIL_FROM"),
+        // testAddress: env("EMAIL_FROM"),
       },
     },
   },

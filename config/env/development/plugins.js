@@ -1,4 +1,4 @@
-const storagedb = require("../../../storagedb.json");
+// const storagedb = require("../../../storagedb.json");
 module.exports = ({ env }) => ({
   upload: {
     config: {
@@ -7,8 +7,7 @@ module.exports = ({ env }) => ({
         bucketName: env("GCS_BUCKET_NAME"),
         publicFiles: env("GCS_PUBLIC_FILES"),
         uniform: env("GCS_UNIFORM"),
-        serviceAccount: storagedb,
-        // serviceAccount: env.json("GCSP_SERVICE_ACCOUNT"),
+        // serviceAccount: storagedb,
         baseUrl: env("GCS_BASE_URL"),
         basePath: env("GCS_BASE_PATH"),
       },
@@ -37,7 +36,7 @@ module.exports = ({ env }) => ({
       settings: {
         defaultFrom: env("EMAIL_FROM"),
         defaultReplyTo: env("EMAIL_FROM"),
-        testAddress: env("EMAIL_FROM"),
+        // testAddress: env("EMAIL_FROM"),
       },
     },
   },

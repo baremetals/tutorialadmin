@@ -4,11 +4,11 @@
   "version": "0.1.0",
   "description": "Tutorial app admin",
   "scripts": {
+    "gcp-build": "strapi build",
     "dev": "strapi develop",
     "start": "strapi start",
     "build": "strapi build",
-    "strapi": "strapi",
-    "gcp-build": "strapi build"
+    "strapi": "strapi"
   },
   "devDependencies": {},
   "dependencies": {
@@ -16,7 +16,7 @@
     "@strapi/plugin-graphql": "4.2.0",
     "@strapi/plugin-i18n": "4.2.0",
     "@strapi/plugin-users-permissions": "4.2.0",
-    "@strapi/provider-email-sendgrid": "^4.0.7",
+    "@strapi/provider-email-sendgrid": "^4.2.0",
     "@strapi/strapi": "4.2.0",
     "pg": "8.6.0",
     "socket.io": "^4.4.1",

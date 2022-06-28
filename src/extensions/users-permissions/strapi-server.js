@@ -105,7 +105,7 @@ module.exports = (plugin) => {
         USER: userInfo,
       }
     );
-      // console.log(email, "real nigger");
+      console.log(email, "real nigger");
       const emailTemplate = {
         to: `${user.email}`, // recipient
         from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender
@@ -134,27 +134,17 @@ module.exports = (plugin) => {
       // await strapi
       //   .plugin("email")
       //   .service("email")
-      //   .sendTemplatedEmail(
-      //     {
-      //       to: user.email,
-      //       // from: is not specified, so it's the defaultFrom that will be used instead
-      //     },
-      //     reset.emailTemplate,
-      //     {
-      //       user: _.pick(user, ["username", "email"]),
-      //     }
-      //   );
-        // .send({
-        //   to: user.email,
-        //   from:
-        //     settings.from.email || settings.from.name
-        //       ? `${settings.from.name} <${settings.from.email}>`
-        //       : undefined,
-        //   replyTo: settings.response_email,
-        //   subject: settings.object,
-        //   text: settings.message,
-        //   html: settings.message,
-        // });
+      //   .send({
+      //     to: user.email,
+      //     from:
+      //       settings.from.email || settings.from.name
+      //         ? `${settings.from.name} <${settings.from.email}>`
+      //         : undefined,
+      //     replyTo: settings.response_email,
+      //     subject: settings.object,
+      //     text: settings.message,
+      //     html: settings.message,
+      //   });
     } catch (err) {
       throw new ApplicationError(err.message);
     }

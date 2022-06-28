@@ -1,6 +1,6 @@
 "use strict";
 const stripe = require("stripe")(process.env.STRIPE_SK);
-const sgMail = require("@sendgrid/mail");
+// const sgMail = require("@sendgrid/mail");
 
 const fromDecimalToInt = (number) => parseInt(number * 100);
 /**
@@ -192,6 +192,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
         .catch((error) => {
           console.log(`Sending the verify email produced this error: ${error}`);
         });
+        
       return this.transformResponse(sanitizedEntity);
     } else {
       ctx.throw(400, "Payment was not successful please try again");
