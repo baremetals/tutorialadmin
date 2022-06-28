@@ -6,5 +6,7 @@ node_modules/
 !.env
 yarn.lock  # If you're using Yarn
 .env
+/terraform
+*.cache
 .cache
 build

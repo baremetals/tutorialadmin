@@ -1,5 +1,6 @@
 const confirm_email = require("./email-template/confirm_email");
 const reset = require("./email-template/reset_password");
+const sgMail = require("@sendgrid/mail");
 
 const crypto = require("crypto");
 const _ = require("lodash");
@@ -85,8 +86,6 @@ module.exports = (plugin) => {
 
     const userInfo = await sanitizeUser(user, ctx);
 
-    
-
     settings.message = reset.html
 
     settings.message = await getService("users-permissions").template(
@@ -98,7 +97,7 @@ module.exports = (plugin) => {
       }
     );
     
-    // console.log(settings.message);
+    // console.log(email, "my nigger");
 
     settings.object = await getService("users-permissions").template(
       settings.object,
@@ -106,23 +105,46 @@ module.exports = (plugin) => {
         USER: userInfo,
       }
     );
-
+      console.log(email, "real nigger");
+      const emailTemplate = {
+        to: `${user.email}`, // recipient
+        from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender
+        template_id: "d-4af2d25542694429ad152637ff8b2d26",
+        dynamic_template_data: {
+          subject: `Reset Password`,
+          username: `${user.username}`,
+          url: `${advanced.email_reset_password}`, //`"<%= URL %>?code=<%= TOKEN %>`,
+          // TOKEN: "",
+          buttonText: "Verify email now",
+        },
+      };
     try {
+        await sgMail
+          .send(emailTemplate)
+          .then(() => {
+            console.log("Email sent");
+          })
+          .catch((error) => {
+            console.log(
+              `Sending the verify email produced this error: ${error}`
+            );
+          });
+
       // Send an email to the user.
-      await strapi
-        .plugin("email")
-        .service("email")
-        .send({
-          to: user.email,
-          from:
-            settings.from.email || settings.from.name
-              ? `${settings.from.name} <${settings.from.email}>`
-              : undefined,
-          replyTo: settings.response_email,
-          subject: settings.object,
-          text: settings.message,
-          html: settings.message,
-        });
+      // await strapi
+      //   .plugin("email")
+      //   .service("email")
+      //   .send({
+      //     to: user.email,
+      //     from:
+      //       settings.from.email || settings.from.name
+      //         ? `${settings.from.name} <${settings.from.email}>`
+      //         : undefined,
+      //     replyTo: settings.response_email,
+      //     subject: settings.object,
+      //     text: settings.message,
+      //     html: settings.message,
+      //   });
     } catch (err) {
       throw new ApplicationError(err.message);
     }
@@ -206,9 +228,9 @@ module.exports = (plugin) => {
         params.confirmed = true;
       }
 
-      const user = await getService("user").add(params);
+      const usr = await getService("user").add(params);
 
-      const sanitizedUser = await sanitizeUser(user, ctx);
+      const sanitizedUser = await sanitizeUser(usr, ctx);
 
       if (settings.email_confirmation) {
         try {
@@ -220,7 +242,7 @@ module.exports = (plugin) => {
         return ctx.send({ user: sanitizedUser });
       }
 
-      const jwt = getService("jwt").issue(_.pick(user, ["id"]));
+      const jwt = getService("jwt").issue(_.pick(usr, ["id"]));
 
       return ctx.send({
         jwt,
@@ -239,7 +261,7 @@ module.exports = (plugin) => {
   }
 
   const sendConfirmationEmail = async (user) => {
-    console.log(user, "I am in this bitch");
+    // console.log(user, "I am in this bitch");
 
     const userPermissionService = getService("users-permissions");
     const pluginStore = await strapi.store({

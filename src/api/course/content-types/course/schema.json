@@ -46,11 +46,11 @@
     },
     "startDate": {
       "type": "datetime",
-      "required": true
+      "required": false
     },
     "endDate": {
       "type": "datetime",
-      "required": true
+      "required": false
     },
     "totalStudents": {
       "type": "integer",
@@ -75,11 +75,6 @@
       "relation": "oneToMany",
       "target": "api::course-video.course-video"
     },
-    "students": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::student.student"
-    },
     "admin_user": {
       "type": "relation",
       "relation": "oneToOne",
@@ -96,6 +91,7 @@
     "level": {
       "type": "enumeration",
       "enum": [
+        "Primer",
         "Beginner",
         "Intermediate",
         "Advance"
@@ -106,7 +102,9 @@
       "enum": [
         "group",
         "single"
-      ]
+      ],
+      "default": "group",
+      "required": true
     },
     "soloPrice": {
       "type": "decimal"
@@ -119,6 +117,22 @@
       "type": "boolean",
       "default": false,
       "required": true
+    },
+    "orders": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::order.order",
+      "mappedBy": "course"
+    },
+    "students": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
+    },
+    "lectures": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::lecture.lecture"
     }
   }
 }
