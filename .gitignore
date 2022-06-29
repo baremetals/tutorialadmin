@@ -117,3 +117,4 @@ build
 storagedb.json
 app.yaml
 /terraform
+.gcloudignore
