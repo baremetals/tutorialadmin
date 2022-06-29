@@ -1,3 +1,4 @@
+// const storagedb = require("../../../storagedb.json");
 module.exports = ({ env }) => ({
   upload: {
     config: {
@@ -6,18 +7,18 @@ module.exports = ({ env }) => ({
         bucketName: env("GCS_BUCKET_NAME"),
         publicFiles: env("GCS_PUBLIC_FILES"),
         uniform: env("GCS_UNIFORM"),
+        // serviceAccount: storagedb,
         baseUrl: env("GCS_BASE_URL"),
         basePath: env("GCS_BASE_PATH"),
       },
     },
   },
-
   graphql: {
     config: {
       endpoint: "/graphql",
       shadowCRUD: true,
       playgroundAlways: false,
-      depthLimit: 7,
+      // depthLimit: 7,
       amountLimit: 100,
       apolloServer: {
         tracing: false,
@@ -30,11 +31,12 @@ module.exports = ({ env }) => ({
     config: {
       provider: env("EMAIL_PROVIDER"),
       providerOptions: {
-        apiKey: env("SENDGRID_API_KEY"),
+        apiKey: env("EMAIL_API_KEY"),
       },
       settings: {
         defaultFrom: env("EMAIL_FROM"),
         defaultReplyTo: env("EMAIL_FROM"),
+        // testAddress: env("EMAIL_FROM"),
       },
     },
   },

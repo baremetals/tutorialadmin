@@ -1,0 +1,12 @@
+.tmp/
+.cache/
+.git/
+build/
+node_modules/
+data/
+.strapi-updater.json
+tf-sa.json
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+.terraform

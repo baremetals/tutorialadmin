@@ -114,7 +114,8 @@ exports
 *.cache
 build
 .strapi-updater.json
-yarn.lock
+# yarn.lock
 storagedb.json
 app.yaml
 /terraform
+.gcloudignore
