@@ -1,6 +1,7 @@
 const confirm_email = require("./email-template/confirm_email");
 const reset = require("./email-template/reset_password");
 const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.EMAIL_API_KEY);
 
 const crypto = require("crypto");
 const _ = require("lodash");
@@ -121,8 +122,8 @@ module.exports = (plugin) => {
     try {
         await sgMail
           .send(emailTemplate)
-          .then(() => {
-            console.log("Email sent");
+          .then((res) => {
+            console.log("Email sent", res);
           })
           .catch((error) => {
             console.log(

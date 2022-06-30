@@ -197,6 +197,12 @@ async function fetchUnReadNotifications(id) {
   }
 }
 
+// async function setApiKey(apiKey) {
+//   const sgMail = require("@sendgrid/mail");
+//  sgMail.setApiKey(apiKey);
+//   return sgMail;
+// }
+
 module.exports = {
   createNewChat,
   respondToChat,

@@ -4,7 +4,7 @@
 node_modules/
 #!include:.gitignore
 !.env
-yarn.lock  # If you're using Yarn
+yarn.lock
 .env
 /terraform
 *.cache
