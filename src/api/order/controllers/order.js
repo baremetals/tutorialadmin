@@ -1,6 +1,7 @@
 "use strict";
 const stripe = require("stripe")(process.env.STRIPE_SK);
-// const sgMail = require("@sendgrid/mail");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.EMAIL_API_KEY);
 
 const fromDecimalToInt = (number) => parseInt(number * 100);
 /**
@@ -113,6 +114,8 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
         courseTitle: course.title,
         subject: `Order Received`,
         username: `${user.username}`,
+        buttonText: "View Order",
+        url: `${process.env.FRONT_END_HOST}home/orders`,
         message: data.isFree
           ? "Your order has been processed. You will receive details of the course by email."
           : "Your order is being processed. You will receive payment confirmation shortly.",
@@ -122,7 +125,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
     await sgMail
       .send(emailTemplate)
       .then(() => {
-        console.log("Email sent");
+        console.log("Email sent", res[0].statusCode);
       })
       .catch((error) => {
         console.log(`Sending the verify email produced this error: ${error}`);
@@ -181,13 +184,15 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
           courseTitle: entity.course.title,
           subject: `Payment Confirmation`,
           username: `${entity.user.username}`,
+          buttonText: "View Order",
+          url: `${process.env.FRONT_END_HOST}home/orders`,
         },
       };
 
       await sgMail
         .send(emailTemplate)
         .then(() => {
-          console.log("Email sent");
+          console.log("Email sent", res[0].statusCode);
         })
         .catch((error) => {
           console.log(`Sending the verify email produced this error: ${error}`);

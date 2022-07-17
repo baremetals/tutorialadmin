@@ -125,7 +125,7 @@ module.exports = {
       socket.on(
         "createChat",
         async ({ owner, recipient, body, slug }, callback) => {
-          console.log("creating new chat");
+          console.log("creating new chat", owner, recipient, body, slug);
           try {
             const chat = await existingChat(slug);
             // console.log(chat)
@@ -139,7 +139,7 @@ module.exports = {
               );
               socket.emit("msg", msg);
             } else {
-              // console.log(chat.user, " i am living")
+              console.log(chat)
               if (chat.user !== null) {
                 console.log("user I am here");
                 const newChat = await createNewChat({
