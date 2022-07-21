@@ -92,9 +92,11 @@ module.exports = {
       socket.on("load all messages", async ({ slug }, callback) => {
         // console.log(socket.id)
         try {
+          console.log({slug} , "====>slug");
           const messages = await loadAllChatMessages(slug);
           // console.log("mated");
           if (messages) {
+            console.log(messages[0].chat , "===>messages");
             socket.emit("messages loaded", messages);
           } else {
             callback("You have no messages!");
@@ -126,9 +128,10 @@ module.exports = {
         "createChat",
         async ({ owner, recipient, body, slug }, callback) => {
           console.log("creating new chat");
+          console.log({recipient});
           try {
             const chat = await existingChat(slug);
-            // console.log(chat)
+            console.log({chat})
             if (chat !== null) {
               const msg = await respondToChat(
                 owner,
@@ -139,20 +142,31 @@ module.exports = {
               );
               socket.emit("msg", msg);
             } else {
-              // console.log(chat.user, " i am living")
-              if (chat.user !== null) {
-                console.log("user I am here");
-                const newChat = await createNewChat({
+              console.log({recipient}, " i am living")
+              // if (chat?.user !== null) {
+                const u = await getUserByUsername(recipient)
+                console.log("user I am here" , u);
+                const newChat = await createNewChat(
                   owner,
-                  recipient,
+                  u?.id,
                   body,
-                  slug,
-                });
-                // console.log(newChat);
+                  slug
+                );
+                console.log({slug});
                 socket.emit("chat", newChat);
-              } else {
-                callback("No user found");
-              }
+                const s = newChat?.slug
+                const messages = await loadAllChatMessages(s);
+                // console.log("mated");
+                if (messages) {
+                  socket.emit("messages loaded", messages);
+                } else {
+                  callback("You have no messages!");
+                }
+
+
+              // } else {
+              //   callback("No user found");
+              // }
             }
             callback();
           } catch (err) {
@@ -164,16 +178,37 @@ module.exports = {
       socket.on(
         "respondToChat",
         async ({ sender, chatId, body, receiver }, callback) => {
-
+          console.log({sender , chatId , body , receiver})
           console.log("responding a message", userId);
           try {
             const user = await getUser(sender);
             if (user) {
               const msg = await respondToChat(sender, chatId, body, receiver);
-              // console.log({ sender, chatId, body, receiver });
+              console.log({ sender, chatId, body, receiver  , msg});
+
+              const s = msg?.chat?.slug
+              const messages = await loadAllChatMessages(s);
+              // console.log("mated");
+              if (messages) {
+                socket.emit("messages loaded", messages);
+              } else {
+                callback("You have no messages!");
+              }
+
+
               // io.to(receiver).to(sender).emit("message", msg);
               // io.to(sender).emit("message", msg);
               // socket.emit("message", msg);
+
+              // const messages = await loadAllChatMessages(slug);
+              // // console.log("mated");
+              // if (messages) {
+              //   socket.emit("messages loaded", messages);
+              // } else {
+              //   callback("You have no messages!");
+              // }
+
+
               socket.to(receiver).to(userId).emit("message", {
                 msg,
                 from: sender,

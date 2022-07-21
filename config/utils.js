@@ -1,5 +1,5 @@
 async function createNewChat(owner, recipient, body, slug) {
-  // console.log(owner, recipient, slug)
+  console.log({body} , "hello there")
   try {
     const chat = await strapi.service("api::chat.chat").create({
       data: {
@@ -9,6 +9,8 @@ async function createNewChat(owner, recipient, body, slug) {
         publishedAt: new Date(),
       },
     });
+
+    console.log({chat});
 
     await strapi.service("api::chat-msg.chat-msg").create({
       data: {
@@ -28,6 +30,7 @@ async function createNewChat(owner, recipient, body, slug) {
         populate: { owner: true, recipient: true },
       });
 
+    console.log({getChat})
     return getChat;
     
   } catch (err) {
@@ -50,7 +53,7 @@ async function respondToChat(sender, chat, body, receiver) {
 
     const msg = await strapi.db
       .query("api::chat-msg.chat-msg")
-      .findOne({ where: { id: entry.id }, populate: { sender: true } });
+      .findOne({ where: { id: entry.id }, populate: { sender: true , chat : true} });
     // console.log(msg)
     return msg;
   } catch (err) {
@@ -140,17 +143,24 @@ async function deleteChat(id) {
 
 
 async function loadAllChats(id) {
-  // console.log(' i tried to get here')
+  console.log(' i tried to get here' , id)
   try {
-    const entry = await strapi.db.query("api::chat.chat").findMany({
-      where: {
-        $or: [{ owner: { id: id } }, { recipient: { id: id } }],
-      },
-      orderBy: { updatedAt: "desc" },
-      populate: { owner: true, recipient: true },
-    });
+    if(id != undefined)
+    {
+      const entry = await strapi.db.query("api::chat.chat").findMany({
+        where: {
+          $or: [{ owner: {id : id} }, { recipient: {id :id} }],
+        },
+        orderBy: { updatedAt: "desc" },
+        populate: { owner: true, recipient: true },
+      });
 
-    return entry
+      return entry
+    }
+    
+    
+
+    
   } catch (err) {
     console.log("Error occured when fetching user", err);
   }
