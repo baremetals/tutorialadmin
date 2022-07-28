@@ -14,6 +14,7 @@ const {
   fetchAllusers,
   loadAllChats,
   fetchUnReadNotifications,
+  editChatMsgReadBulk
 } = require("../config/utils");
 
 module.exports = {
@@ -89,14 +90,26 @@ module.exports = {
       });
 
       // load all messages in a chat
-      socket.on("load all messages", async ({ slug }, callback) => {
+      socket.on("load all messages", async ({ slug , me  }, callback) => {
         // console.log(socket.id)
         try {
-          console.log({slug} , "====>slug");
-          const messages = await loadAllChatMessages(slug);
+          let messages;
+          console.log({slug , me} , "====>slug");
+          const getuser = await getUser(me)
+           messages = await loadAllChatMessages(slug);
+          let ids = []
+          messages.map((e)=>{
+            if(e.isRead == false && e?.receiver?.id == me )
+            {
+              ids.push(e.id)
+            }
+          })
+          const doRead = await editChatMsgReadBulk(ids)
+          
           // console.log("mated");
           if (messages) {
-            console.log(messages[0].chat , "===>messages");
+            // console.log(messages[0] , "===>messages");
+            socket.emit("load all chats" , {id : me});
             socket.emit("messages loaded", messages);
           } else {
             callback("You have no messages!");
@@ -184,16 +197,23 @@ module.exports = {
             const user = await getUser(sender);
             if (user) {
               const msg = await respondToChat(sender, chatId, body, receiver);
-              console.log({ sender, chatId, body, receiver  , msg});
+              // console.log({ sender, chatId, body, receiver  , msg});
 
               const s = msg?.chat?.slug
               const messages = await loadAllChatMessages(s);
               // console.log("mated");
-              if (messages) {
+              if (messages) { 
+                // socket.emit("getsinglechatnotification" , msg )
+                
+                // const msgGet = await editChatMsgRead(msg?.id, msg?.isRead);
+                // console.log({msgGet})
                 socket.emit("messages loaded", messages);
+                // socket.emit("message", msg);
               } else {
                 callback("You have no messages!");
               }
+
+              // const receiverUser = await getUser(receiver)
 
 
               // io.to(receiver).to(sender).emit("message", msg);
@@ -213,6 +233,11 @@ module.exports = {
                 msg,
                 from: sender,
                 to: receiver,
+              });
+
+
+              socket.to(receiver).to(userId).emit("getsinglechatnotification", {
+                msg
               });
 
               // socket.to(userId).emit("message", {
