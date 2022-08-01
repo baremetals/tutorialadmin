@@ -147,7 +147,7 @@ async function editChatMsgReadBulk(ids, body) {
 
 async function deleteChatMsg(id) {
   try {
-    const entry = await strapi.service.delete("api::chat-msg.chat-msg", id);
+    const entry = await strapi.entityService.delete("api::chat-msg.chat-msg", id);
     return entry;
   } catch (err) {
     console.log("error while fetching", err);
@@ -276,3 +276,4 @@ module.exports = {
   fetchUnReadNotifications,
   editChatMsgReadBulk
 };
+  

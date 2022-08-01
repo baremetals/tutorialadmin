@@ -296,16 +296,24 @@ module.exports = {
 
       // Deleting a message
       socket.on("deleteChatMsg", async (data, callback) => {
-        console.log("deleting a message");
+        console.log("deleting a message" , {data});
         try {
-          const user = await getUser(data.userId);
+          const user = await getUserByUsername(data.username);
           if (user) {
             await deleteChatMsg(data.chatId);
           } else {
             callback("No user found");
           }
+
+          const r = await loadAllChatMessages(data.slug)
+          if (r) {
+            socket.emit("messages loaded", r);
+            socket.to(user.id).emit("messages loaded", r);
+          } else {
+            callback("You have no messages!");
+          }
         } catch (err) {
-          console.log("err inside catch block", err);
+          console.log("err inside catch block", err); 
         }
       });
 
