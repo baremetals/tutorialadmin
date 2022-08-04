@@ -93,11 +93,7 @@ module.exports = {
 
 
           const chat = await loadAllChats(id);
-          if(chat)
-          {
-            chat.map((d)=>{
-              console.log("ALL CHATS LOAD" , d.counUnread);
-                      })
+
             if (chat) {
               socket.emit("chats loaded", {
                 chat,
@@ -106,7 +102,7 @@ module.exports = {
             } else {
               callback("You have no messages!");
             }
-          }
+          
           
           callback();
         } catch (err) {
