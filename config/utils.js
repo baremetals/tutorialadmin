@@ -175,6 +175,8 @@ async function loadAllChats(id) {
         populate: { owner: true, recipient: true},
       });
 
+      console.log({entry});
+
       let slugs = [];
 
       entry.map((e)=>{
@@ -276,4 +278,3 @@ module.exports = {
   fetchUnReadNotifications,
   editChatMsgReadBulk
 };
-  
