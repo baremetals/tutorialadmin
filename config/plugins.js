@@ -1,4 +1,4 @@
-// const storagedb = require("../../../storagedb.json");
+// const storagedb = require("../storagedb.json");
 module.exports = ({ env }) => ({
   upload: {
     config: {

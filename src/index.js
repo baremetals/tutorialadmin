@@ -164,6 +164,7 @@ module.exports = {
       socket.on(
         "createChat",
         async ({ owner, recipient, body, slug }, callback) => {
+
           console.log("creating new chat");
           console.log({recipient});
           try {
@@ -184,6 +185,7 @@ module.exports = {
                 const u = await getUserByUsername(recipient)
                 console.log("user I am here" , u);
                 const newChat = await createNewChat(
+
                   owner,
                   u?.id,
                   body,
