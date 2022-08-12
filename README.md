@@ -55,3 +55,18 @@ Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/
 ---
 
 <sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+
+# 🚀 Using Google Cloud Run && Contaniner Registry
+# remote dev server
+
+**Get current project**
+gcloud config get-value project
+
+**Set required project**
+gcloud config set project PROJECT_ID
+
+**Enable the required APIs**
+gcloud services enable cloudbuild.googleapis.com compute.googleapis.com
+
+**Build custom image**
+  gcloud builds submit --tag gcr.io/baremetals-tutorial/image-name
