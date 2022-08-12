@@ -1,6 +1,7 @@
 const confirm_email = require("./email-template/confirm_email");
 const reset = require("./email-template/reset_password");
 const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.EMAIL_API_KEY);
 
 const crypto = require("crypto");
 const _ = require("lodash");
@@ -105,7 +106,7 @@ module.exports = (plugin) => {
         USER: userInfo,
       }
     );
-      console.log(email, "real nigger");
+      // console.log(email, "real nigger");
       const emailTemplate = {
         to: `${user.email}`, // recipient
         from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender
@@ -114,15 +115,17 @@ module.exports = (plugin) => {
           subject: `Reset Password`,
           username: `${user.username}`,
           url: `${advanced.email_reset_password}`, //`"<%= URL %>?code=<%= TOKEN %>`,
-          // TOKEN: "",
-          buttonText: "Verify email now",
+          firstLine: "We heard that you lost your password. Sorry about that!.",
+          secondLine: `But don’t worry! You can use the button above to reset
+                        your password.`,
+          buttonText: "Reset Password",
         },
       };
     try {
         await sgMail
           .send(emailTemplate)
-          .then(() => {
-            console.log("Email sent");
+          .then((res) => {
+            console.log("Email sent", res[0].statusCode);
           })
           .catch((error) => {
             console.log(
@@ -303,21 +306,44 @@ module.exports = (plugin) => {
       USER: sanitizedUserInfo,
     });
 
+    const emailTemplate = {
+      to: `${user.email}`, // recipient
+      from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender
+      template_id: "d-4af2d25542694429ad152637ff8b2d26",
+      dynamic_template_data: {
+        subject: `Verify Email`,
+        username: `${user.username}`,
+        url: `${process.env.APP_URL}/api/auth/email-confirmation`,
+        firstLine: "Thank you for registering!",
+        secondLine:
+          "You have to confirm your email address. Please click on the button above.",
+        buttonText: "Verify Email",
+      },
+    };
+
     // Send an email to the user.
-    await strapi
-      .plugin("email")
-      .service("email")
-      .send({
-        to: user.email,
-        from:
-          settings.from.email && settings.from.name
-            ? `${settings.from.name} <${settings.from.email}>`
-            : undefined,
-        replyTo: settings.response_email,
-        subject: settings.object,
-        text: settings.message,
-        html: settings.message,
+    await sgMail
+      .send(emailTemplate)
+      .then((res) => {
+        console.log("Email sent", res[0].statusCode);
+      })
+      .catch((error) => {
+        console.log(`Sending the verify email produced this error: ${error}`);
       });
+    // await strapi
+    //   .plugin("email")
+    //   .service("email")
+    //   .send({
+    //     to: user.email,
+    //     from:
+    //       settings.from.email && settings.from.name
+    //         ? `${settings.from.name} <${settings.from.email}>`
+    //         : undefined,
+    //     replyTo: settings.response_email,
+    //     subject: settings.object,
+    //     text: settings.message,
+    //     html: settings.message,
+    //   });
   };
 
   const edit = async (userId, params = {}) => {
