@@ -212,6 +212,30 @@ async function loadAllChats(id) {
   }
 }
 
+async function loadSingleChats(id) {
+  try {
+    if (id != undefined) {
+      const entry = await strapi.db.query("api::chat.chat").findOne({
+        where: {
+          $or: [{ owner: { id: id } }, { recipient: { id: id } }],
+        },
+        orderBy: { updatedAt: "desc" },
+        populate: { owner: true, recipient: true},
+      });
+
+      return entry;
+    }
+  } catch (err) {
+    console.log("Error occured when fetching user", err);
+  }
+}
+
+
+
+
+
+
+
 async function loadAllChatMessages(slug , user) {
   // console.log(' i tried to get here')
   try {
@@ -276,5 +300,6 @@ module.exports = {
   loadAllChats,
   fetchAllusers,
   fetchUnReadNotifications,
-  editChatMsgReadBulk
+  editChatMsgReadBulk,
+  loadSingleChats
 };

@@ -14,7 +14,8 @@ const {
   fetchAllusers,
   loadAllChats,
   fetchUnReadNotifications,
-  editChatMsgReadBulk
+  editChatMsgReadBulk,
+  loadSingleChats,
 } = require("../config/utils");
 
 module.exports = {
@@ -69,41 +70,34 @@ module.exports = {
       //   socket.id = id;
       // });
 
-      socket.on("load all chats", async ({ id , slug}, callback) => {
+      socket.on("load all chats", async ({ id, slug }, callback) => {
         // console.log(socket.id);
         const to = users.filter((usr) => usr.userID === id);
 
-        
         // console.log(to)
         try {
-          if(slug)
-        {
-          const messages = await loadAllChatMessages(slug);
-          let ids = []
-           messages.map((e)=>{
-            if(e.isRead == false && e?.receiver?.id == id )
-            {
-              ids.push(e.id)
-            }
-          })
-          const doRead = await editChatMsgReadBulk(ids)
-        }
-        
-
-
+          if (slug) {
+            const messages = await loadAllChatMessages(slug);
+            let ids = [];
+            messages.map((e) => {
+              if (e.isRead == false && e?.receiver?.id == id) {
+                ids.push(e.id);
+              }
+            });
+            const doRead = await editChatMsgReadBulk(ids);
+          }
 
           const chat = await loadAllChats(id);
 
-            if (chat) {
-              socket.emit("chats loaded", {
-                chat,
-                to: to.userID,
-              });
-            } else {
-              callback("You have no messages!");
-            }
-          
-          
+          if (chat) {
+            socket.emit("chats loaded", {
+              chat,
+              to: to.userID,
+            });
+          } else {
+            callback("You have no messages!");
+          }
+
           callback();
         } catch (err) {
           console.log("err inside catch block", err);
@@ -111,28 +105,27 @@ module.exports = {
       });
 
       // load all messages in a chat
-      socket.on("load all messages", async ({ slug , me  }, callback) => {
+      socket.on("load all messages", async ({ slug, me }, callback) => {
         // console.log(socket.id)
         try {
           let messages;
-          console.log({slug , me} , "====>slug");
-          const getuser = await getUser(me)
-           messages = await loadAllChatMessages(slug);
-          let ids = []
-           messages.map((e)=>{
-            if(e.isRead == false && e?.receiver?.id == me )
-            {
-              ids.push(e.id)
+          console.log({ slug, me }, "====>slug");
+          const getuser = await getUser(me);
+          messages = await loadAllChatMessages(slug);
+          let ids = [];
+          messages.map((e) => {
+            if (e.isRead == false && e?.receiver?.id == me) {
+              ids.push(e.id);
             }
-          })
+          });
 
-          console.log({ids});
-          const doRead = await editChatMsgReadBulk(ids)
-          
+          console.log({ ids });
+          const doRead = await editChatMsgReadBulk(ids);
+
           // console.log("mated");
           if (messages) {
             // console.log(messages[0] , "===>messages");
-            socket.emit("load all chats" , {id : me});
+            socket.emit("load all chats", { id: me });
             socket.emit("messages loaded", messages);
           } else {
             callback("You have no messages!");
@@ -160,15 +153,40 @@ module.exports = {
         }
       });
 
+      socket.on(
+        "getusersbyusername",
+        async ({ username, userid }, callback) => {
+          try {
+            console.log("socket call getusersbyusername");
+
+            const to = users.filter((usr) => usr.userID === userid);
+
+            const chat = await loadAllChats(userid);
+            if (chat) {
+              socket.emit("getslug", {
+                chat,
+                to: to.userID,
+              });
+            } else {
+              callback("You have no messages!");
+            }
+
+            callback();
+          } catch (err) {
+            console.log("err inside catch block", err);
+          }
+        }
+      );
+
       // Creating a new chat message
       socket.on(
         "createChat",
         async ({ owner, recipient, body, slug }, callback) => {
           console.log("creating new chat");
-          console.log({recipient});
+          console.log({ recipient });
           try {
             const chat = await existingChat(slug);
-            console.log({chat})
+            console.log({ chat });
             if (chat !== null) {
               const msg = await respondToChat(
                 owner,
@@ -179,37 +197,30 @@ module.exports = {
               );
               socket.emit("msg", msg);
             } else {
-              console.log({recipient}, " i am living")
+              console.log({ recipient }, " i am living");
               // if (chat?.user !== null) {
-                const u = await getUserByUsername(recipient)
-                console.log("user I am here" , u);
-                const newChat = await createNewChat(
-                  owner,
-                  u?.id,
-                  body,
-                  slug
-                );
-                console.log({slug});
-                socket.emit("chat", newChat);
-                const s = newChat?.slug
-                const messages = await loadAllChatMessages(s);
-                // console.log("mated");
-                if (messages) {
-                  socket.emit("messages loaded", messages);
-                } else {
-                  callback("You have no messages!");
-                }
+              const u = await getUserByUsername(recipient);
+              console.log("user I am here", u);
+              const newChat = await createNewChat(owner, u?.id, body, slug);
+              console.log({ slug });
+              socket.emit("chat", newChat);
+              const s = newChat?.slug;
+              const messages = await loadAllChatMessages(s);
+              // console.log("mated");
+              if (messages) {
+                socket.emit("messages loaded", messages);
+              } else {
+                callback("You have no messages!");
+              }
 
-
-                const chatMsgs = await fetchUnReadNotifications(recipient);
-                console.log({chatMsgs});
-                // console.log(chatMsgs);
-                if (chatMsgs) {
-                  socket.to(recipient).emit("chatMsgs loaded", chatMsgs.length);
-                } else {
-                  callback("You have no chatMsgs!");
-                }
-
+              const chatMsgs = await fetchUnReadNotifications(recipient);
+              console.log({ chatMsgs });
+              // console.log(chatMsgs);
+              if (chatMsgs) {
+                socket.to(recipient).emit("chatMsgs loaded", chatMsgs.length);
+              } else {
+                callback("You have no chatMsgs!");
+              }
 
               // } else {
               //   callback("No user found");
@@ -225,7 +236,7 @@ module.exports = {
       socket.on(
         "respondToChat",
         async ({ sender, chatId, body, receiver }, callback) => {
-          console.log({sender , chatId , body , receiver})
+          console.log({ sender, chatId, body, receiver });
           console.log("responding a message", userId);
           try {
             const user = await getUser(sender);
@@ -233,12 +244,12 @@ module.exports = {
               const msg = await respondToChat(sender, chatId, body, receiver);
               // console.log({ sender, chatId, body, receiver  , msg});
 
-              const s = msg?.chat?.slug
+              const s = msg?.chat?.slug;
               const messages = await loadAllChatMessages(s);
               // console.log("mated");
-              if (messages) { 
+              if (messages) {
                 // socket.emit("getsinglechatnotification" , msg )
-                
+
                 // const msgGet = await editChatMsgRead(msg?.id, msg?.isRead);
                 // console.log({msgGet})
                 socket.emit("messages loaded", messages);
@@ -248,7 +259,6 @@ module.exports = {
               }
 
               // const receiverUser = await getUser(receiver)
-
 
               // io.to(receiver).to(sender).emit("message", msg);
               // io.to(sender).emit("message", msg);
@@ -262,23 +272,23 @@ module.exports = {
               //   callback("You have no messages!");
               // }
 
-
               socket.to(receiver).to(userId).emit("message", {
                 msg,
                 from: sender,
                 to: receiver,
               });
 
-
               socket.to(receiver).to(userId).emit("getsinglechatnotification", {
-                msg
+                msg,
               });
 
               const chatMsgs = await fetchUnReadNotifications(receiver);
-              console.log({chatMsgs});
+              console.log({ chatMsgs });
               // console.log(chatMsgs);
               if (chatMsgs) {
-                socket.to(receiver).emit("chatMsgs loaded", chatMsgs.length);
+                console.log("Chat messages");
+                console.log({receiver});
+                socket.in(receiver).emit("chatMsgs loaded", chatMsgs.length);
               } else {
                 callback("You have no chatMsgs!");
               }
@@ -339,7 +349,7 @@ module.exports = {
 
       // Deleting a message
       socket.on("deleteChatMsg", async (data, callback) => {
-        console.log("deleting a message" , {data});
+        console.log("deleting a message", { data });
         try {
           const user = await getUserByUsername(data.username);
           if (user) {
@@ -348,7 +358,7 @@ module.exports = {
             callback("No user found");
           }
 
-          const r = await loadAllChatMessages(data.slug)
+          const r = await loadAllChatMessages(data.slug);
           if (r) {
             socket.emit("messages loaded", r);
             socket.to(user.id).to(user.id).emit("messages loaded", r);
@@ -356,7 +366,7 @@ module.exports = {
             callback("You have no messages!");
           }
         } catch (err) {
-          console.log("err inside catch block", err); 
+          console.log("err inside catch block", err);
         }
       });
 
