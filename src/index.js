@@ -182,6 +182,7 @@ module.exports = {
       socket.on(
         "createChat",
         async ({ owner, recipient, body, slug }, callback) => {
+
           console.log("creating new chat");
           console.log({ recipient });
           try {
