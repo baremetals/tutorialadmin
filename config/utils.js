@@ -175,7 +175,6 @@ async function loadAllChats(id) {
         populate: { owner: true, recipient: true},
       });
 
-      console.log({entry});
 
       let slugs = [];
 
@@ -215,7 +214,7 @@ async function loadAllChats(id) {
 async function loadSingleChats(id) {
   try {
     if (id != undefined) {
-      const entry = await strapi.db.query("api::chat.chat").findOne({
+      const entry = await strapi.db.query("api::chat.chat").findMany({
         where: {
           $or: [{ owner: { id: id } }, { recipient: { id: id } }],
         },
@@ -266,6 +265,19 @@ async function fetchAllusers() {
   }
 }
 
+async function fetchusers() {
+  try {
+    // console.log(id)
+    const entry = await strapi.db
+      .query("plugin::users-permissions.user")
+      .findMany({});
+    return entry;
+  } catch (err) {
+    console.log("error while fetching", err);
+  }
+}
+
+
 async function fetchUnReadNotifications(id) {
   try {
     // console.log(id)
@@ -291,6 +303,7 @@ module.exports = {
   respondToChat,
   getUser,
   existingChat,
+  fetchusers,
   editChatMsg,
   deleteChatMsg,
   deleteChat,

@@ -16,6 +16,7 @@ const {
   fetchUnReadNotifications,
   editChatMsgReadBulk,
   loadSingleChats,
+  fetchusers
 } = require("../config/utils");
 
 module.exports = {
@@ -52,16 +53,25 @@ module.exports = {
       socket.join(userId);
 
       const users = [];
-      const resp = await fetchAllusers();
+      const usersIDs = []
+      const resp = await fetchusers();
+
+      
       resp.forEach((user) => {
+        usersIDs.push(user.id)
         users.push({
           userID: user.id,
           username: user.username,
+          img : user.img,
           connected: user.online,
+          slug : null,
+          online : user.online
         });
       });
 
-      socket.emit("users", users);
+      const chatsOfUsers = await loadAllChats(usersIDs)
+
+      
       // socket.on("connected", async ({ id, sessionID }) => {
       //   // console.log("id", userID);
       //   socket.sessionID = sessionID;
@@ -69,6 +79,28 @@ module.exports = {
       //   socket.username = sessionID;
       //   socket.id = id;
       // });
+
+      socket.on("getallusers" , async ({targetValue , me} , callback)=>{
+        console.log({users});
+        const to = users.filter((usr) => usr.username.includes(targetValue));
+        console.log({to});
+        const fU = chatsOfUsers.filter((cou)=> cou?.owner?.id == me || cou?.recipient?.id == me)
+        console.log(fU.length , "userId");
+
+
+        let filteredUsers = []
+        to.map((e)=>{
+          fU.map((d)=>{
+            if(d?.owner?.id == e?.userID || d?.recipient?.id == e?.userID)
+            {
+              e.slug = d?.slug
+            }
+          })
+          filteredUsers.push(e)
+        })
+        socket.emit("users", filteredUsers)
+
+      })
 
       socket.on("load all chats", async ({ id, slug }, callback) => {
         // console.log(socket.id);
@@ -182,7 +214,6 @@ module.exports = {
       socket.on(
         "createChat",
         async ({ owner, recipient, body, slug }, callback) => {
-
           console.log("creating new chat");
           console.log({ recipient });
           try {
@@ -290,6 +321,7 @@ module.exports = {
                 console.log("Chat messages");
                 console.log({receiver});
                 socket.in(receiver).emit("chatMsgs loaded", chatMsgs.length);
+                socket.to(receiver).emit("chatMsgs loaded", chatMsgs.length);
               } else {
                 callback("You have no chatMsgs!");
               }
