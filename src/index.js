@@ -137,12 +137,12 @@ module.exports = {
       });
 
       // load all messages in a chat
-      socket.on("load all messages", async ({ slug, me }, callback) => {
+      socket.on("load all messages", async ({ slug, username , me }, callback) => {
         // console.log(socket.id)
         try {
           let messages;
-          console.log({ slug, me }, "====>slug");
-          const getuser = await getUser(me);
+          console.log({ slug, username }, "====>slug");
+          const getuser = await getUserByUsername(username);
           messages = await loadAllChatMessages(slug);
           let ids = [];
           messages.map((e) => {
@@ -150,10 +150,14 @@ module.exports = {
               ids.push(e.id);
             }
           });
-
           console.log({ ids });
           const doRead = await editChatMsgReadBulk(ids);
-
+          const chatMsgs = await fetchUnReadNotifications(me);
+              console.log({ chatMsgs });
+              // console.log(chatMsgs);
+              if (chatMsgs) {
+                socket.emit("chatMsgs loaded", chatMsgs.length);
+              } 
           // console.log("mated");
           if (messages) {
             // console.log(messages[0] , "===>messages");
