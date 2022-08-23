@@ -80,7 +80,7 @@ module.exports = {
       //   socket.id = id;
       // });
 
-      socket.on("getallusers" , async ({targetValue , me} , callback)=>{
+      socket.on("getallusers" , async ( { targetValue , me } , callback )=>{
         console.log({users});
         const to = users.filter((usr) => usr.username.includes(targetValue));
         console.log({to});

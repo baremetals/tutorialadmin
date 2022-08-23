@@ -19,19 +19,11 @@
       "type": "uid",
       "targetField": "title"
     },
-    "video": {
-      "type": "media",
-      "multiple": false,
-      "required": false,
-      "allowedTypes": [
-        "videos"
-      ]
-    },
     "description": {
       "type": "richtext",
       "required": true
     },
-    "videoUrl": {
+    "video": {
       "type": "string",
       "required": true
     },

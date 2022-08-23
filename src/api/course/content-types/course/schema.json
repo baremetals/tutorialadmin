@@ -70,11 +70,6 @@
       "relation": "oneToOne",
       "target": "api::teacher.teacher"
     },
-    "videos": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::course-video.course-video"
-    },
     "admin_user": {
       "type": "relation",
       "relation": "oneToOne",
@@ -130,9 +125,10 @@
       "target": "plugin::users-permissions.user"
     },
     "lectures": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::lecture.lecture"
+      "displayName": "Lectures",
+      "type": "component",
+      "repeatable": true,
+      "component": "lectures.lectures"
     }
   }
 }
