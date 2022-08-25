@@ -16,7 +16,7 @@ const {
   fetchUnReadNotifications,
   editChatMsgReadBulk,
   loadSingleChats,
-  fetchusers
+  fetchusers,
 } = require("../config/utils");
 
 module.exports = {
@@ -40,38 +40,41 @@ module.exports = {
     console.log(process.env.FRONT_END_HOST);
     const io = new Server(strapi.server.httpServer, {
       cors: {
-        origin:process.env.FRONT_END_HOST,
+        origin: process.env.FRONT_END_HOST,
         methods: ["GET", "POST"],
         allowedHeaders: ["my-custom-header"],
         credentials: true,
-      }
+      },
     });
 
     io.on("connection", async function (socket) {
       // console.log(socket);
       const userId = socket.handshake.auth.id;
-
       socket.join(userId);
+      console.log({ userId });
+      socket.on("joinroom", async ({ me }) => {
+        console.log("JOIN ROOMED CALLED ", me);
+        socket.join(me);
+      });
 
       const users = [];
-      const usersIDs = []
+      const usersIDs = [];
       const resp = await fetchusers();
 
-      
       resp.forEach((user) => {
-        usersIDs.push(user.id)
+        usersIDs.push(user.id);
         users.push({
           userID: user.id,
           username: user.username,
-          img : user.img,
+          img: user.img,
           connected: false,
-          slug : null,
-          online : false
+          slug: null,
+          online: false,
         });
       });
 
-      const chatsOfUsers = await loadAllChats(usersIDs)
-      
+      const chatsOfUsers = await loadAllChats(usersIDs);
+
       // socket.on("connected", async ({ id, sessionID }) => {
       //   // console.log("id", userID);
       //   socket.sessionID = sessionID;
@@ -80,29 +83,27 @@ module.exports = {
       //   socket.id = id;
       // });
 
-      socket.on("getallusers" , async ({targetValue , me} , callback)=>{
-
-        console.log({users});
+      socket.on("getallusers", async ({ targetValue, me }, callback) => {
+        console.log({ users });
 
         const to = users.filter((usr) => usr.username.includes(targetValue));
-        console.log({to});
-        const fU = chatsOfUsers.filter((cou)=> cou?.owner?.id == me || cou?.recipient?.id == me)
-        console.log(fU.length , "userId");
+        console.log({ to });
+        const fU = chatsOfUsers.filter(
+          (cou) => cou?.owner?.id == me || cou?.recipient?.id == me
+        );
+        console.log(fU.length, "userId");
 
-
-        let filteredUsers = []
-        to.map((e)=>{
-          fU.map((d)=>{
-            if(d?.owner?.id == e?.userID || d?.recipient?.id == e?.userID)
-            {
-              e.slug = d?.slug
+        let filteredUsers = [];
+        to.map((e) => {
+          fU.map((d) => {
+            if (d?.owner?.id == e?.userID || d?.recipient?.id == e?.userID) {
+              e.slug = d?.slug;
             }
-          })
-          filteredUsers.push(e)
-        })
-        socket.emit("users", filteredUsers)
-
-      })
+          });
+          filteredUsers.push(e);
+        });
+        socket.emit("users", filteredUsers);
+      });
 
       socket.on("load all chats", async ({ id, slug }, callback) => {
         // console.log(socket.id);
@@ -139,43 +140,45 @@ module.exports = {
       });
 
       // load all messages in a chat
-      socket.on("load all messages", async ({ slug, username , me }, callback) => {
-        // console.log(socket.id)
-        try {
-          let messages;
-          console.log({ slug, username , me}, "====>slug");
-          const getuser = await getUserByUsername(username);
-          messages = await loadAllChatMessages(slug);
-          let ids = [];
-          console.log({messages} , "==>messages");
-          messages.map((e) => {
-            if (e.isRead == false && e?.receiver?.id == me) {
-              ids.push(e.id);
+      socket.on(
+        "load all messages",
+        async ({ slug, username, me }, callback) => {
+          // console.log(socket.id)
+          try {
+            let messages;
+            console.log({ slug, username, me }, "====>slug");
+            const getuser = await getUserByUsername(username);
+            messages = await loadAllChatMessages(slug);
+            let ids = [];
+            // console.log({ messages }, "==>messages");
+            messages.map((e) => {
+              if (e.isRead == false && e?.receiver?.id == me) {
+                ids.push(e.id);
+              }
+            });
+            console.log({ ids });
+            const doRead = await editChatMsgReadBulk(ids);
+            const chatMsgs = await fetchUnReadNotifications(me);
+            console.log(chatMsgs.length);
+            // console.log(chatMsgs);
+            if (chatMsgs) {
+              socket.emit("chatMsgs loaded", chatMsgs.length);
             }
-          });
-          console.log({ ids });
-          const doRead = await editChatMsgReadBulk(ids);
-          const chatMsgs = await fetchUnReadNotifications(me);
-              console.log(chatMsgs.length );
-              // console.log(chatMsgs);
-              if (chatMsgs) {
-                socket.emit("chatMsgs loaded", chatMsgs.length);
-
-              } 
-          // console.log("mated");
-          if (messages) {
-            // console.log(messages[0] , "===>messages");
-            socket.emit("emptyusers", []);
-            socket.emit("load all chats", { id: me });
-            socket.emit("messages loaded", messages);
-          } else {
-            callback("You have no messages!");
+            // console.log("mated");
+            if (messages) {
+              // console.log(messages[0] , "===>messages");
+              socket.emit("emptyusers", []);
+              socket.emit("load all chats", { id: me });
+              socket.emit("messages loaded", messages);
+            } else {
+              callback("You have no messages!");
+            }
+            callback();
+          } catch (err) {
+            console.log("err inside catch block", err);
           }
-          callback();
-        } catch (err) {
-          console.log("err inside catch block", err);
         }
-      });
+      );
 
       // load all unread notifications
       socket.on("load unread messages", async ({ id }, callback) => {
@@ -260,13 +263,17 @@ module.exports = {
                 callback("You have no messages!");
               }
 
-              const chatMsgs = await fetchUnReadNotifications(newChat?.recipient?.id);
-              console.log({ chatMsgs } , "=================>");
+              const chatMsgs = await fetchUnReadNotifications(
+                newChat?.recipient?.id
+              );
+              console.log({ chatMsgs }, "=================>");
               // console.log(chatMsgs);
               if (chatMsgs) {
-
                 socket.emit("messages loaded", messages);
-                io.to(newChat?.recipient?.id).emit("chatMsgs loaded", chatMsgs.length);
+                io.to(newChat?.recipient?.id).emit(
+                  "chatMsgs loaded",
+                  chatMsgs.length
+                );
               } else {
                 callback("You have no chatMsgs!");
               }
@@ -302,8 +309,7 @@ module.exports = {
                 // const msgGet = await editChatMsgRead(msg?.id, msg?.isRead);
                 // console.log({msgGet})
                 socket.emit("messages loaded", messages);
-                
-                
+
                 // socket.emit("message", msg);
               } else {
                 callback("You have no messages!");
@@ -323,24 +329,23 @@ module.exports = {
               //   callback("You have no messages!");
               // }
 
-              socket.to(receiver).to(userId).emit("message", {
+              socket.to(receiver).emit("message", {
                 msg,
                 from: sender,
                 to: receiver,
               });
               const chatMsgs = await fetchUnReadNotifications(receiver);
-              socket.to(receiver).to(userId).emit("getsinglechatnotification", {
-                msg
+              socket.to(receiver).emit("getsinglechatnotification", {
+                msg,
               });
 
               const chat = await loadAllChats(receiver);
 
-                
               // console.log({ chatMsgs } , "=================>");
               // console.log(chatMsgs);
               if (chatMsgs) {
                 console.log("Chat messages");
-                console.log({receiver});
+                console.log({ receiver });
                 // socket.to(receiver).emit("chatMsgs loaded", chatMsgs.length);
                 io.in(receiver).emit("chatMsgs loaded", chatMsgs.length);
                 io.to(receiver).emit("chatMsgs loaded", chatMsgs.length);
@@ -375,12 +380,18 @@ module.exports = {
 
       // Editing a message body
       socket.on("editChatMsgBody", async (data, callback) => {
-        console.log("editing a message");
+        console.log("editing a message", data.data);
         try {
-          const user = await getUser(data.userId);
+          const user = await getUserByUsername(data.data.username);
           if (user) {
-            const msg = await editChatMsg(data.msg, data.body);
-            socket.emit("message", msg);
+            const msg = await editChatMsg(data.data.msgId, data.data.body);
+            console.log({ msg });
+            if (msg) {
+              const messages = await loadAllChatMessages(data.data.slug);
+              socket.emit("messages loaded", messages);
+              socket.to(user?.id).to(user?.id).emit("messages loaded", messages);
+            }
+            // socket.emit("message", msg);
           } else {
             callback("No user found");
           }

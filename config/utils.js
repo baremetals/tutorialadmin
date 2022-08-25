@@ -48,12 +48,10 @@ async function respondToChat(sender, chat, body, receiver) {
       },
     });
 
-    const msg = await strapi.db
-      .query("api::chat-msg.chat-msg")
-      .findOne({
-        where: { id: entry.id },
-        populate: { sender: true, chat: true, receiver: true },
-      });
+    const msg = await strapi.db.query("api::chat-msg.chat-msg").findOne({
+      where: { id: entry.id },
+      populate: { sender: true, chat: true, receiver: true },
+    });
     // console.log(msg)
     return msg;
   } catch (err) {
@@ -98,11 +96,16 @@ async function existingChat(username, slug) {
 
 async function editChatMsg(id, body) {
   try {
-    const entry = await strapi.service.update("api::chat-msg.chat.msg", id, {
-      data: {
-        body,
-      },
-    });
+    console.log(id , body , "==>id,body");
+    const entry = await strapi.entityService.update(
+      "api::chat-msg.chat-msg",
+      id,
+      {
+        data: {
+          body : body
+        },
+      }
+    );
     return entry;
   } catch (err) {
     console.log("error while fetching", err);
@@ -128,17 +131,14 @@ async function editChatMsgRead(id, body) {
 
 async function editChatMsgReadBulk(ids, body) {
   try {
-    const entry = await strapi.db.query("api::chat-msg.chat-msg").updateMany(
-      {
-      where :{
-        id :ids
+    const entry = await strapi.db.query("api::chat-msg.chat-msg").updateMany({
+      where: {
+        id: ids,
       },
-        data: {
-          isRead: true,
-        },
-      
-    
-      });
+      data: {
+        isRead: true,
+      },
+    });
     return entry;
   } catch (err) {
     console.log("error while fetching", err);
@@ -147,7 +147,10 @@ async function editChatMsgReadBulk(ids, body) {
 
 async function deleteChatMsg(id) {
   try {
-    const entry = await strapi.entityService.delete("api::chat-msg.chat-msg", id);
+    const entry = await strapi.entityService.delete(
+      "api::chat-msg.chat-msg",
+      id
+    );
     return entry;
   } catch (err) {
     console.log("error while fetching", err);
@@ -164,7 +167,7 @@ async function deleteChat(id) {
 }
 
 async function loadAllChats(id) {
-  console.log(" i tried to get here", id);
+  console.log(" i tried to get here");
   try {
     if (id != undefined) {
       const entry = await strapi.db.query("api::chat.chat").findMany({
@@ -172,37 +175,42 @@ async function loadAllChats(id) {
           $or: [{ owner: { id: id } }, { recipient: { id: id } }],
         },
         orderBy: { updatedAt: "desc" },
-        populate: { owner: true, recipient: true},
+        populate: { owner: true, recipient: true },
       });
-
 
       let slugs = [];
 
-      entry.map((e)=>{
-        slugs.push(e.slug)
-      })
-      let count = 0
-      const getMessages = await strapi.db.query("api::chat-msg.chat-msg").findMany({
-        where: { chat: { 
-          slug : {
-          $in :  slugs 
-        }} },
-        orderBy: { createdAt: "asc" },
-        // offset: 15,
-        populate: { sender: true, receiver: true, chat: true },
+      entry.map((e) => {
+        slugs.push(e.slug);
       });
+      let count = 0;
+      const getMessages = await strapi.db
+        .query("api::chat-msg.chat-msg")
+        .findMany({
+          where: {
+            chat: {
+              slug: {
+                $in: slugs,
+              },
+            },
+          },
+          orderBy: { createdAt: "asc" },
+          // offset: 15,
+          populate: { sender: true, receiver: true, chat: true },
+        });
 
-      entry.map((e)=>{
-        getMessages.map((g)=>{
-          if(e.slug == g.chat.slug && g.isRead == false && g?.receiver?.id == id)
-          {
-            count = count +1
-            e.counUnread = count
-            
+      entry.map((e) => {
+        getMessages.map((g) => {
+          if (
+            e.slug == g.chat.slug &&
+            g.isRead == false &&
+            g?.receiver?.id == id
+          ) {
+            count = count + 1;
+            e.counUnread = count;
           }
-        })
-
-      })
+        });
+      });
 
       return entry;
     }
@@ -219,7 +227,7 @@ async function loadSingleChats(id) {
           $or: [{ owner: { id: id } }, { recipient: { id: id } }],
         },
         orderBy: { updatedAt: "desc" },
-        populate: { owner: true, recipient: true},
+        populate: { owner: true, recipient: true },
       });
 
       return entry;
@@ -229,13 +237,7 @@ async function loadSingleChats(id) {
   }
 }
 
-
-
-
-
-
-
-async function loadAllChatMessages(slug , user) {
+async function loadAllChatMessages(slug, user) {
   // console.log(' i tried to get here')
   try {
     const entry = await strapi.db.query("api::chat-msg.chat-msg").findMany({
@@ -244,8 +246,6 @@ async function loadAllChatMessages(slug , user) {
       // offset: 15,
       populate: { sender: true, receiver: true, chat: true },
     });
-    
-
 
     return entry;
   } catch (err) {
@@ -276,7 +276,6 @@ async function fetchusers() {
     console.log("error while fetching", err);
   }
 }
-
 
 async function fetchUnReadNotifications(id) {
   try {
@@ -314,5 +313,5 @@ module.exports = {
   fetchAllusers,
   fetchUnReadNotifications,
   editChatMsgReadBulk,
-  loadSingleChats
+  loadSingleChats,
 };
