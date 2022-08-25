@@ -329,11 +329,10 @@ module.exports = {
               //   callback("You have no messages!");
               // }
 
-              socket.to(receiver).emit("message", {
-                msg,
-                from: sender,
-                to: receiver,
-              });
+              socket.to(receiver).emit("messages loaded", 
+                messages
+              );  
+              
               const chatMsgs = await fetchUnReadNotifications(receiver);
               socket.to(receiver).emit("getsinglechatnotification", {
                 msg,
