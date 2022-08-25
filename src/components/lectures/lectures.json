@@ -2,7 +2,8 @@
   "collectionName": "components_lectures_lectures",
   "info": {
     "displayName": "Lectures",
-    "icon": "rocket"
+    "icon": "rocket",
+    "description": ""
   },
   "options": {},
   "attributes": {
@@ -13,20 +14,16 @@
       "type": "date"
     },
     "video": {
-      "type": "string"
+      "type": "text"
     },
     "notes": {
       "type": "richtext"
     },
-    "files": {
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
-      ],
-      "type": "media",
-      "multiple": true
+    "progress": {
+      "type": "decimal"
+    },
+    "duration": {
+      "type": "integer"
     }
   }
 }

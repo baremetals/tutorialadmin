@@ -31,19 +31,6 @@
     "notes": {
       "type": "richtext"
     },
-    "githubLink": {
-      "type": "string"
-    },
-    "image": {
-      "type": "media",
-      "multiple": false,
-      "required": false,
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos"
-      ]
-    },
     "startDate": {
       "type": "datetime",
       "required": false
@@ -124,11 +111,18 @@
       "relation": "oneToMany",
       "target": "plugin::users-permissions.user"
     },
-    "lectures": {
-      "displayName": "Lectures",
+    "image": {
+      "type": "string"
+    },
+    "lecture": {
       "type": "component",
       "repeatable": true,
       "component": "lectures.lectures"
+    },
+    "reviews": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::review.review"
     }
   }
 }

@@ -17,10 +17,20 @@
       "relation": "oneToMany",
       "target": "api::course.course"
     },
-    "tutor": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "plugin::users-permissions.user"
+    "fullName": {
+      "type": "string"
+    },
+    "image": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "text"
+    },
+    "title": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
     }
   }
 }
