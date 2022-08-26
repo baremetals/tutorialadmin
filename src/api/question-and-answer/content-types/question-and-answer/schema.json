@@ -26,7 +26,7 @@
     "comments": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::comment.comment"
+      "target": "api::course-comment.course-comment"
     },
     "course": {
       "type": "relation",

@@ -15,9 +15,6 @@
     "message": {
       "type": "text"
     },
-    "time": {
-      "type": "datetime"
-    },
     "rating": {
       "type": "decimal"
     },

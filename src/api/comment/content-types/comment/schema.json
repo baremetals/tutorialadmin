@@ -29,6 +29,11 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::post.post"
+    },
+    "course": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::course.course"
     }
   }
 }

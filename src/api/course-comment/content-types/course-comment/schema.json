@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "course_comments",
+  "info": {
+    "singularName": "course-comment",
+    "pluralName": "course-comments",
+    "displayName": "courseComment"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "body": {
+      "type": "richtext"
+    },
+    "course": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::course.course"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}

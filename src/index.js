@@ -83,8 +83,8 @@ module.exports = {
       //   socket.id = id;
       // });
 
-      socket.on("getallusers" , async ( { targetValue , me } , callback )=>{
-        console.log({users});
+      socket.on("getallusers", async ({ targetValue, me }, callback) => {
+        console.log({ users });
 
         const to = users.filter((usr) => usr.username.includes(targetValue));
         console.log({ to });
@@ -297,7 +297,6 @@ module.exports = {
           try {
             const user = await getUser(sender);
             if (user) {
-              
               const msg = await respondToChat(sender, chatId, body, receiver);
               // console.log({ sender, chatId, body, receiver  , msg});
 
@@ -329,10 +328,8 @@ module.exports = {
               //   callback("You have no messages!");
               // }
 
-              socket.to(receiver).emit("messages loaded", 
-                messages
-              );  
-              
+              socket.to(receiver).emit("messages loaded", messages);
+
               const chatMsgs = await fetchUnReadNotifications(receiver);
               socket.to(receiver).emit("getsinglechatnotification", {
                 msg,
@@ -388,7 +385,10 @@ module.exports = {
             if (msg) {
               const messages = await loadAllChatMessages(data.data.slug);
               socket.emit("messages loaded", messages);
-              socket.to(user?.id).to(user?.id).emit("messages loaded", messages);
+              socket
+                .to(user?.id)
+                .to(user?.id)
+                .emit("messages loaded", messages);
             }
             // socket.emit("message", msg);
           } else {
