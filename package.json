@@ -18,6 +18,7 @@
     "@strapi/plugin-users-permissions": "4.2.2",
     "@strapi/provider-email-sendgrid": "^4.2.2",
     "@strapi/strapi": "4.2.2",
+    "formdata-node": "^5.0.0",
     "pg": "8.7.1",
     "socket.io": "^4.4.1",
     "strapi-provider-upload-google-cloud-storage": "^4.0.0",

@@ -21,10 +21,6 @@
       "type": "string",
       "required": true
     },
-    "duration": {
-      "type": "string",
-      "required": true
-    },
     "description": {
       "type": "richtext"
     },
@@ -123,6 +119,14 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::review.review"
+    },
+    "messages": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::course-message.course-message"
+    },
+    "duration": {
+      "type": "integer"
     }
   }
 }

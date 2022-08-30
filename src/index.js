@@ -18,6 +18,17 @@ const {
   loadSingleChats,
   fetchusers,
 } = require("../config/utils");
+const {
+  addMessage,
+  editMsg,
+  editMsgRead,
+  editMsgReadBulk,
+  deleteMsg,
+  loadAllMessages,
+  getUnReadCourseNotifications,
+  newCourseChat,
+  getCourseUser,
+} = require("../config/course");
 
 module.exports = {
   /**
@@ -57,6 +68,12 @@ module.exports = {
         socket.join(me);
       });
 
+      // Join Course Group Chat
+      socket.on("joincourseroom", async ({ slug }) => {
+        console.log("mate life is hard bro ", slug);
+        socket.join(slug);
+      });
+
       const users = [];
       const usersIDs = [];
       const resp = await fetchusers();
@@ -83,6 +100,7 @@ module.exports = {
       //   socket.id = id;
       // });
 
+      // For searching for a user on the frontend
       socket.on("getallusers", async ({ targetValue, me }, callback) => {
         console.log({ users });
 
@@ -180,7 +198,7 @@ module.exports = {
         }
       );
 
-      // load all unread notifications
+      // load all unread notifications for the icon
       socket.on("load unread messages", async ({ id }, callback) => {
         try {
           console.log("socket call");
@@ -197,6 +215,7 @@ module.exports = {
         }
       });
 
+      // Not Being Used On the FrontEnd
       socket.on(
         "getusersbyusername",
         async ({ username, userid }, callback) => {
@@ -400,6 +419,7 @@ module.exports = {
         }
       });
       // Editing message isRead field
+
       socket.on("editChatMsgIsRead", async (data, callback) => {
         console.log("editing a message isRead field");
         try {
@@ -439,9 +459,121 @@ module.exports = {
         }
       });
 
+      // load all unread course notifications
+      socket.on("load unread course messages", async ({ id }, callback) => {
+        try {
+          console.log("socket course call");
+          const chatMsgs = await getUnReadCourseNotifications(id);
+          // console.log(chatMsgs);
+          if (chatMsgs) {
+            socket.emit("course messages loaded", chatMsgs.length);
+          } else {
+            callback("There are no messages!");
+          }
+          callback();
+        } catch (err) {
+          console.log("err inside catch block", err);
+        }
+      });
+
+      // load all course chat messages
+      socket.on(
+        "load all course messages",
+        async ({ slug, courseId, me }, callback) => {
+          // console.log(socket.id)
+          try {
+            let messages;
+            console.log({ slug, me, courseId }, "====>slug");
+            // const getuser = await getCourseUserById(id); Todo: create this function
+            messages = await loadAllMessages(slug);
+            // let ids = [];
+            // console.log({ messages }, "==>messages");
+            // messages.map((e) => {
+            //   if (e.read == false && e?.student?.id == me) {
+            //     ids.push(e.id);
+            //   }
+            // });
+            // console.log({ ids });
+            // const doRead = await editMsgReadBulk(ids);
+            // const chatMsgs = await getUnReadCourseNotifications(me); Todo: change this method
+            // console.log(chatMsgs.length);
+            // console.log(chatMsgs);
+            // if (chatMsgs) {
+            //   socket.emit("chatMsgs loaded", chatMsgs.length);
+            // }
+            // console.log(messages);
+            if (messages) {
+              // console.log(messages[0] , "===>messages");
+              // socket.emit("emptyusers", []);
+              // socket.emit("load all chats", { id: me });
+              // socket.emit("course messages loaded", messages);
+              socket.emit("course messages loaded", { messages, to: courseId });
+            } else {
+              callback("No course messages!");
+            }
+            callback();
+          } catch (err) {
+            console.log("err inside catch block", err);
+          }
+        }
+      );
+
+      // New course message
+      socket.on(
+        "new course message",
+        async ({ student, username, message, slug, course, file }, callback) => {
+          // console.log({ student, username, message, slug, course, file });
+          try {
+            const user = await getUser(student);
+            const stdnt = await getCourseUser(course, student);
+            // console.log(stdnt.id);
+            if (user && stdnt) {
+              const msg = await addMessage(
+                student,
+                course,
+                message,
+                file,
+                username
+              );
+              if (msg) {
+                const messages = await loadAllMessages(slug);
+                if (messages) {
+                  io.emit("course messages loaded", { messages, to: course });
+                } else {
+                  callback("You have no messages!");
+                }
+              }
+              
+              
+              // const chatMsgs = await getUnReadCourseNotifications(course);
+              // socket.to(course).emit("getsinglechatnotification", {
+              //   msg,
+              // });
+
+              // if (chatMsgs) {
+              //   console.log("Chat messages");
+              //   console.log({ course });
+              //   // socket.to(receiver).emit("chatMsgs loaded", chatMsgs.length);
+              //   io.in(course).emit("chatMsgs loaded", chatMsgs.length);
+              //   io.to(course).emit("chatMsgs loaded", chatMsgs.length);
+
+              // } else {
+              //   callback("You have no chatMsgs!");
+              // }
+            } else {
+              callback("No user found");
+            }
+            callback();
+          } catch (err) {
+            console.log("err inside catch block", err);
+          }
+        }
+      );
+
       // notify users upon disconnection
       socket.on("disconnect", async () => {});
     });
+
 
     strapi.db.lifecycles.subscribe({
       models: ["plugin::users-permissions.user"],

@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "group_chats",
+  "info": {
+    "singularName": "group-chat",
+    "pluralName": "group-chats",
+    "displayName": "courseChat",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "course": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::course.course"
+    },
+    "slug": {
+      "type": "uid"
+    },
+    "messages": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::course-message.course-message"
+    }
+  }
+}

@@ -69,4 +69,4 @@ gcloud config set project PROJECT_ID
 gcloud services enable cloudbuild.googleapis.com compute.googleapis.com
 
 **Build custom image**
-  gcloud builds submit --tag gcr.io/baremetals-tutorial/image-name
+  gcloud builds submit --tag gcr.io/baremetals-tutorial/strapi-dev/ver1
