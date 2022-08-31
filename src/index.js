@@ -48,7 +48,7 @@ module.exports = {
    */
   bootstrap(/*{ strapi }*/) {
     const { Server } = require("socket.io");
-    console.log(process.env.FRONT_END_HOST);
+    // console.log(process.env.FRONT_END_HOST);
     const io = new Server(strapi.server.httpServer, {
       cors: {
         origin: process.env.FRONT_END_HOST,
@@ -62,15 +62,15 @@ module.exports = {
 
       const userId = socket.handshake.auth.id;
       socket.join(userId);
-      console.log({ userId });
+      // console.log({ userId });
       socket.on("joinroom", async ({ me }) => {
-        console.log("JOIN ROOMED CALLED ", me);
+        // console.log("JOIN ROOMED CALLED ", me);
         socket.join(me);
       });
 
       // Join Course Group Chat
       socket.on("joincourseroom", async ({ slug }) => {
-        console.log("mate life is hard bro ", slug);
+        // console.log("mate life is hard bro ", slug);
         socket.join(slug);
       });
 
