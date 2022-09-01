@@ -1,9 +1,9 @@
 'use strict';
 
 /**
- *  lecture controller
+ *  group-chat controller
  */
 
 const { createCoreController } = require('@strapi/strapi').factories;
 
-module.exports = createCoreController('api::lecture.lecture');
+module.exports = createCoreController('api::group-chat.group-chat');

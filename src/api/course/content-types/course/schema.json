@@ -21,28 +21,11 @@
       "type": "string",
       "required": true
     },
-    "duration": {
-      "type": "string",
-      "required": true
-    },
     "description": {
       "type": "richtext"
     },
     "notes": {
       "type": "richtext"
-    },
-    "githubLink": {
-      "type": "string"
-    },
-    "image": {
-      "type": "media",
-      "multiple": false,
-      "required": false,
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos"
-      ]
     },
     "startDate": {
       "type": "datetime",
@@ -69,11 +52,6 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::teacher.teacher"
-    },
-    "videos": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::course-video.course-video"
     },
     "admin_user": {
       "type": "relation",
@@ -129,10 +107,26 @@
       "relation": "oneToMany",
       "target": "plugin::users-permissions.user"
     },
-    "lectures": {
+    "image": {
+      "type": "string"
+    },
+    "lecture": {
+      "type": "component",
+      "repeatable": true,
+      "component": "lectures.lectures"
+    },
+    "reviews": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::lecture.lecture"
+      "target": "api::review.review"
+    },
+    "messages": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::course-message.course-message"
+    },
+    "duration": {
+      "type": "integer"
     }
   }
 }

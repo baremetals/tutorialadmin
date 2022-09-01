@@ -1,10 +1,10 @@
 {
   "kind": "collectionType",
-  "collectionName": "comments",
+  "collectionName": "question_and_answers",
   "info": {
-    "singularName": "comment",
-    "pluralName": "comments",
-    "displayName": "Comments",
+    "singularName": "question-and-answer",
+    "pluralName": "question-and-answers",
+    "displayName": "Question&Answer",
     "description": ""
   },
   "options": {
@@ -12,23 +12,21 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "isDisabled": {
-      "type": "boolean",
-      "default": false
+    "title": {
+      "type": "string"
     },
-    "body": {
-      "type": "richtext",
-      "required": true
+    "question": {
+      "type": "text"
     },
     "user": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user"
     },
-    "post": {
+    "comments": {
       "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::post.post"
+      "relation": "oneToMany",
+      "target": "api::course-comment.course-comment"
     },
     "course": {
       "type": "relation",

@@ -1,10 +1,10 @@
 {
   "kind": "collectionType",
-  "collectionName": "comments",
+  "collectionName": "reviews",
   "info": {
-    "singularName": "comment",
-    "pluralName": "comments",
-    "displayName": "Comments",
+    "singularName": "review",
+    "pluralName": "reviews",
+    "displayName": "Review",
     "description": ""
   },
   "options": {
@@ -12,23 +12,16 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "isDisabled": {
-      "type": "boolean",
-      "default": false
+    "message": {
+      "type": "text"
     },
-    "body": {
-      "type": "richtext",
-      "required": true
+    "rating": {
+      "type": "decimal"
     },
     "user": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user"
-    },
-    "post": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::post.post"
     },
     "course": {
       "type": "relation",
