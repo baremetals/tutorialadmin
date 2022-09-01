@@ -312,6 +312,7 @@ module.exports = (plugin) => {
       CODE: confirmationToken,
     });
 
+
     settings.object = await userPermissionService.template(settings.object, {
       USER: sanitizedUserInfo,
     });
@@ -321,9 +322,10 @@ module.exports = (plugin) => {
       from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender
       template_id: "d-4af2d25542694429ad152637ff8b2d26",
       dynamic_template_data: {
-        subject: `Verify Email`,
+        // subject: `Verify Email`,
+        subject: settings.object,
         username: `${user.username}`,
-        url: `${process.env.APP_URL}/api/auth/email-confirmation`,
+        url: `${process.env.APP_URL}/api/auth/email-confirmation?confirmation=${confirmationToken}`,
         firstLine: "Thank you for registering!",
         secondLine:
           "You have to confirm your email address. Please click on the button above.",
