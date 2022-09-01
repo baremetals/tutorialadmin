@@ -252,12 +252,22 @@ module.exports = (plugin) => {
         user: sanitizedUser,
       });
     } catch (err) {
-      if (_.includes(err.message, "username")) {
+      // console.log("fucling print:", err.details.errors[0]);
+      // console.log("pagans print:", err);
+      if (
+        _.includes(
+          err.details.errors[0].message,
+          "This attribute must be unique"
+        )
+      ) {
+        // console.log("rass print", _.includes(err.details.errors[0]));
         throw new ApplicationError("Username already taken");
       } else if (_.includes(err.message, "email")) {
         throw new ApplicationError("Email already taken");
+      }  else if (_.includes(err.message, "password")) {
+        throw new ApplicationError(err.message);
       } else {
-        strapi.log.error(err);
+        // strapi.log.error(err);
         throw new ApplicationError("An error occurred during account creation");
       }
     }
