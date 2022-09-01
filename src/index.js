@@ -483,7 +483,8 @@ module.exports = {
       },
       async afterFindOne(event) {
         const { result, params } = event;
-        if (params.where.provider) {
+        // console.log(event)
+        if (params.where.provider && result !== null) {
           await strapi.entityService.update(
             "plugin::users-permissions.user",
             result.id,

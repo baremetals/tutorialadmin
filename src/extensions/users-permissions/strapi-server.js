@@ -114,7 +114,7 @@ module.exports = (plugin) => {
         dynamic_template_data: {
           subject: `Reset Password`,
           username: `${user.username}`,
-          url: `${advanced.email_reset_password}`, //`"<%= URL %>?code=<%= TOKEN %>`,
+          url: `${advanced.email_reset_password}/?code=${resetPasswordToken}`, //`"<%= URL %>?code=<%= TOKEN %>`,
           firstLine: "We heard that you lost your password. Sorry about that!.",
           secondLine: `But don’t worry! You can use the button above to reset
                         your password.`,
