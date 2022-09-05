@@ -20,11 +20,6 @@
     "name": {
       "type": "string"
     },
-    "students": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "plugin::users-permissions.user"
-    },
     "slug": {
       "type": "uid",
       "targetField": "name"
@@ -59,6 +54,11 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::question-and-answer.question-and-answer"
+    },
+    "students": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
     }
   }
 }

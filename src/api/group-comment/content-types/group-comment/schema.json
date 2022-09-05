@@ -4,7 +4,8 @@
   "info": {
     "singularName": "group-comment",
     "pluralName": "group-comments",
-    "displayName": "groupComment"
+    "displayName": "groupComment",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -19,10 +20,10 @@
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user"
     },
-    "group": {
+    "qna": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "api::group.group"
+      "target": "api::question-and-answer.question-and-answer"
     }
   }
 }
