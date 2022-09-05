@@ -23,15 +23,15 @@
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user"
     },
+    "group": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::group.group"
+    },
     "comments": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::course-comment.course-comment"
-    },
-    "course": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::course.course"
+      "target": "api::group-comment.group-comment"
     }
   }
 }

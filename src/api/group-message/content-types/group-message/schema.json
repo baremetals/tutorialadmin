@@ -1,11 +1,10 @@
 {
   "kind": "collectionType",
-  "collectionName": "course_messages",
+  "collectionName": "group_messages",
   "info": {
-    "singularName": "course-message",
-    "pluralName": "course-messages",
-    "displayName": "courseMessage",
-    "description": ""
+    "singularName": "group-message",
+    "pluralName": "group-messages",
+    "displayName": "groupMessage"
   },
   "options": {
     "draftAndPublish": true
@@ -15,10 +14,10 @@
     "message": {
       "type": "richtext"
     },
-    "course": {
+    "group": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "api::course.course"
+      "target": "api::group.group"
     },
     "hasRead": {
       "type": "json"

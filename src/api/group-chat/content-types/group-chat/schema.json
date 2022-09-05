@@ -19,11 +19,6 @@
     },
     "slug": {
       "type": "uid"
-    },
-    "messages": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::course-message.course-message"
     }
   }
 }

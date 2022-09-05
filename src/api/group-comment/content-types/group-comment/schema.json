@@ -1,34 +1,28 @@
 {
   "kind": "collectionType",
-  "collectionName": "comments",
+  "collectionName": "group_comments",
   "info": {
-    "singularName": "comment",
-    "pluralName": "comments",
-    "displayName": "Comments",
-    "description": ""
+    "singularName": "group-comment",
+    "pluralName": "group-comments",
+    "displayName": "groupComment"
   },
   "options": {
     "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
-    "isDisabled": {
-      "type": "boolean",
-      "default": false
-    },
     "body": {
-      "type": "richtext",
-      "required": true
+      "type": "richtext"
     },
     "user": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "plugin::users-permissions.user"
     },
-    "post": {
+    "group": {
       "type": "relation",
       "relation": "oneToOne",
-      "target": "api::post.post"
+      "target": "api::group.group"
     }
   }
 }

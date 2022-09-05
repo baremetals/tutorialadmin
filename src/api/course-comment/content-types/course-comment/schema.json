@@ -11,18 +11,8 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "body": {
-      "type": "richtext"
-    },
-    "course": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::course.course"
-    },
-    "user": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "plugin::users-permissions.user"
+    "test": {
+      "type": "string"
     }
   }
 }

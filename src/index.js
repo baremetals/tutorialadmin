@@ -25,10 +25,10 @@ const {
   editMsgReadBulk,
   deleteMsg,
   loadAllMessages,
-  getUnReadCourseNotifications,
-  newCourseChat,
-  getCourseUser,
-} = require("../config/course");
+  getUnReadGroupNotifications,
+  newGroupChat,
+  getGroupUser,
+} = require("../config/group");
 
 module.exports = {
   /**
@@ -59,7 +59,6 @@ module.exports = {
     });
 
     io.on("connection", async function (socket) {
-
       const userId = socket.handshake.auth.id;
       socket.join(userId);
       // console.log({ userId });
@@ -69,7 +68,7 @@ module.exports = {
       });
 
       // Join Course Group Chat
-      socket.on("joincourseroom", async ({ slug }) => {
+      socket.on("joingroup", async ({ slug }) => {
         // console.log("mate life is hard bro ", slug);
         socket.join(slug);
       });
@@ -92,7 +91,6 @@ module.exports = {
 
       const chatsOfUsers = await loadAllChats(usersIDs);
       socket.on("getallusers", async ({ targetValue, me }, callback) => {
-
         const to = users.filter((usr) => usr.username.includes(targetValue));
         const fU = chatsOfUsers.filter(
           (cou) => cou?.owner?.id == me || cou?.recipient?.id == me
@@ -205,7 +203,6 @@ module.exports = {
         "getusersbyusername",
         async ({ username, userid }, callback) => {
           try {
-
             const to = users.filter((usr) => usr.userID === userid);
 
             const chat = await loadAllChats(userid);
@@ -394,13 +391,13 @@ module.exports = {
         }
       });
 
-      // load all unread course notifications
-      socket.on("load unread course messages", async ({ id }, callback) => {
+      // load all unread group notifications
+      socket.on("load unread group messages", async ({ id }, callback) => {
         try {
-          const chatMsgs = await getUnReadCourseNotifications(id);
+          const chatMsgs = await getUnReadGroupNotifications(id);
           // console.log(chatMsgs);
           if (chatMsgs) {
-            socket.emit("course messages loaded", chatMsgs.length);
+            socket.emit("group messages loaded", chatMsgs.length);
           } else {
             callback("There are no messages!");
           }
@@ -410,18 +407,18 @@ module.exports = {
         }
       });
 
-      // load all course chat messages
+      // load all group chat messages
       socket.on(
-        "load all course messages",
-        async ({ slug, courseId, me }, callback) => {
+        "load all group messages",
+        async ({ slug, groupId, me }, callback) => {
           // console.log(socket.id)
           try {
             let messages;
             messages = await loadAllMessages(slug);
             if (messages) {
-              socket.emit("course messages loaded", { messages, to: courseId });
+              socket.emit("group messages loaded", { messages, to: groupId });
             } else {
-              callback("No course messages!");
+              callback("No group messages!");
             }
             callback();
           } catch (err) {
@@ -430,17 +427,20 @@ module.exports = {
         }
       );
 
-      // New course message
+      // New group message
       socket.on(
-        "new course message",
-        async ({ student, username, message, slug, course, file }, callback) => {
+        "new group message",
+        async (
+          { student, username, message, slug, group, file },
+          callback
+        ) => {
           try {
             const user = await getUser(student);
-            const stdnt = await getCourseUser(course, student);
+            const stdnt = await getGroupUser(group, student);
             if (user && stdnt) {
               const msg = await addMessage(
                 student,
-                course,
+                group,
                 message,
                 file,
                 username
@@ -448,12 +448,11 @@ module.exports = {
               if (msg) {
                 const messages = await loadAllMessages(slug);
                 if (messages) {
-                  io.emit("course messages loaded", { messages, to: course });
+                  io.emit("group messages loaded", { messages, to: group });
                 } else {
                   callback("You have no messages!");
                 }
               }
-              
             } else {
               callback("No user found");
             }

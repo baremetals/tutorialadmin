@@ -1,16 +1,15 @@
 
-async function addMessage(student, course, message, file, username) {
-
+async function addMessage(student, group, message, file, username) {
   try {
-
+    // console.log(file)
     const entry = await strapi
-      .service("api::course-message.course-message")
+      .service("api::group-message.group-message")
       .create({
         data: {
           message: message ? message : null,
           student,
           file: file,
-          course,
+          group,
           type: !file ? "text" : "file",
           allRead: false,
           hasRead: [
@@ -27,7 +26,7 @@ async function addMessage(student, course, message, file, username) {
     // console.log(entry);
 
     const msg = await strapi.db
-      .query("api::course-message.course-message")
+      .query("api::group-message.group-message")
       .findOne({
         where: { id: entry.id },
         populate: { student: true, file: true },
@@ -38,13 +37,13 @@ async function addMessage(student, course, message, file, username) {
   }
 }
 
-// create a new course message
-async function newCourseChat(course, user, message, slug) {
+// create a new group message
+async function newGroupChat(group, user, message, slug) {
   console.log({ body }, "hello there");
   try {
-    const chat = await strapi.service("api::course-chat.course-chat").create({
+    const chat = await strapi.service("api::group-chat.group-chat").create({
       data: {
-        course,
+        group,
         slug,
         publishedAt: new Date(),
       },
@@ -53,7 +52,7 @@ async function newCourseChat(course, user, message, slug) {
     console.log({ chat });
 
     const entry = await strapi
-      .service("api::course-message.course-message")
+      .service("api::group-message.group-message")
       .create({
         data: {
           message,
@@ -63,17 +62,17 @@ async function newCourseChat(course, user, message, slug) {
         },
       });
 
-    await strapi.entityService.update("api::course-chat.course-chat", chat.id, {
+    await strapi.entityService.update("api::group-chat.group-chat", chat.id, {
       data: {
         message: [entry.id],
       },
     });
 
     const getChat = await strapi.db
-      .query("api::course-chat.course-chat")
+      .query("api::group-chat.group-chat")
       .findOne({
         where: { id: chat.id },
-        populate: { course: true },
+        populate: { group: true },
       });
 
     console.log({ getChat });
@@ -87,7 +86,7 @@ async function editMsg(id, message) {
   try {
     console.log(id, body, "==>id,message");
     const entry = await strapi.entityService.update(
-      "api::course-message.course-message",
+      "api::group-message.group-message",
       id,
       {
         data: {
@@ -104,7 +103,7 @@ async function editMsg(id, message) {
 async function editMsgRead(id, body) {
   try {
     const entry = await strapi.entityService.update(
-      "api::course-message.course-message",
+      "api::group-message.group-message",
       id,
       {
         data: {
@@ -121,7 +120,7 @@ async function editMsgRead(id, body) {
 async function editMsgReadBulk(ids, body) {
   try {
     const entry = await strapi.db
-      .query("api::course-message.course-message")
+      .query("api::group-message.group-message")
       .updateMany({
         where: {
           id: ids,
@@ -139,7 +138,7 @@ async function editMsgReadBulk(ids, body) {
 async function deleteMsg(id) {
   try {
     const entry = await strapi.entityService.delete(
-      "api::course-message.course-message",
+      "api::group-message.group-message",
       id
     );
     return entry;
@@ -152,9 +151,9 @@ async function loadAllMessages(slug) {
   // console.log(' i tried to get here')
   try {
     const entry = await strapi.db
-      .query("api::course-message.course-message")
+      .query("api::group-message.group-message")
       .findMany({
-        where: { course: { slug } },
+        where: { group: { slug } },
         orderBy: { createdAt: "asc" },
         // offset: 15,
         populate: { student: true, file: true },
@@ -166,14 +165,14 @@ async function loadAllMessages(slug) {
   }
 }
 
-async function getUnReadCourseNotifications(id) {
+async function getUnReadGroupNotifications(id) {
   try {
     // console.log(id)
     const entry = await strapi.db
-      .query("api::course-message.course-message")
+      .query("api::group-message.group-message")
       .findMany({
         where: {
-          $and: [{ course: { id } }, { read: false }],
+          $and: [{ group: { id } }, { read: false }],
         },
       });
     return entry;
@@ -182,13 +181,13 @@ async function getUnReadCourseNotifications(id) {
   }
 }
 
-async function getCourseUser(course, student) {
+async function getGroupUser(group, student) {
   try {
-    // console.log(course);
+    // console.log(group);
     // console.log(student);
     const entry = await strapi.db
-      .query("api::course.course")
-      .findOne({ where: { id: course }, populate: { students: true } });
+      .query("api::group.group")
+      .findOne({ where: { id: group }, populate: { students: true } });
 
     const user = await entry.students.filter((ele) => ele.id === student);
     // console.log(user[0]);
@@ -205,7 +204,7 @@ module.exports = {
   editMsgReadBulk,
   deleteMsg,
   loadAllMessages,
-  getUnReadCourseNotifications,
-  newCourseChat,
-  getCourseUser,
+  getUnReadGroupNotifications,
+  newGroupChat,
+  getGroupUser,
 };

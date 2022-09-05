@@ -27,14 +27,6 @@
     "notes": {
       "type": "richtext"
     },
-    "startDate": {
-      "type": "datetime",
-      "required": false
-    },
-    "endDate": {
-      "type": "datetime",
-      "required": false
-    },
     "totalStudents": {
       "type": "integer",
       "default": 0
@@ -102,31 +94,21 @@
       "target": "api::order.order",
       "mappedBy": "course"
     },
-    "students": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "plugin::users-permissions.user"
-    },
     "image": {
       "type": "string"
-    },
-    "lecture": {
-      "type": "component",
-      "repeatable": true,
-      "component": "lectures.lectures"
     },
     "reviews": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::review.review"
     },
-    "messages": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::course-message.course-message"
-    },
     "duration": {
       "type": "integer"
+    },
+    "groups": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::group.group"
     }
   }
 }
