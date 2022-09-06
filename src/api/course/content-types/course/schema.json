@@ -109,6 +109,10 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::group.group"
+    },
+    "private": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

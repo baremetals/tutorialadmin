@@ -41,12 +41,6 @@
       "default": 1,
       "required": true
     },
-    "user": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "orders"
-    },
     "imageUrl": {
       "type": "string",
       "required": true
@@ -56,8 +50,13 @@
       "required": true,
       "default": "group"
     },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
     "courseId": {
-      "type": "integer"
+      "type": "string"
     }
   }
 }

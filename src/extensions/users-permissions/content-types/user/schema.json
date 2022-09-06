@@ -127,8 +127,7 @@
     "orders": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::order.order",
-      "mappedBy": "user"
+      "target": "api::order.order"
     },
     "groups": {
       "type": "relation",

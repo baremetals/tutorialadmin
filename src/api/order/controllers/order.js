@@ -30,31 +30,20 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
     }
     
     const { user } = ctx.state;
+    
 
-    if (course.students.length > 0) {
-      const users = course.students;
+    const findOrder = await strapi
+      .service("api::order.order")
+      .find({
+        filters: { $and: [{ user: user.id }, { course: course.id }] },
+        // populate: { posts: true },
+      });
 
-      const or = users.filter((u) => u.id === user.id);
-      // console.log('or');
-      if (or.length > 0) {
-        return ctx.throw(400, "You previously purchased this course");
-      }
+    if (findOrder.length > 0) {
+      return ctx.throw(400, "You previously purchased this course");
     }
 
-    // const entry = await strapi.db
-    //   .query("plugin::users-permissions.user")
-    //   .findOne({ where: { id: user.id }, populate: { orders: true } });
-
-    // if (entry.orders.length > 0) {
-    //   const orders = entry.orders;
-
-    //   const or = orders.filter(order => order.courseId === course.id)
-    //   // console.log(or);
-    //   if (or.length > 0) {
-    //     return ctx.throw(400, "You previously purchased this course");
-    //   }
-    // }
-
+    // console.log("going up");
     
     let session;
 
@@ -81,27 +70,31 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
         ],
       });
     } else session = "free-purchase";
-    // console.log("here times");
+
+    // console.log(data);
+
+
     // Create the order
     const order = await strapi.service("api::order.order").create({
       data: {
         user: user.id,
         course: course.id,
-        courseId: course.id,
+        courseId: data.course,
         total: data.total,
         status: data.isFree ? "free" : "unpaid",
-        imageUrl: data.imageUrl,
+        imageUrl: data.imageUrl || '',
         quantity: data.quantity,
         orderType: data.orderType,
         checkout_session: data.isFree ? "free-purchase" : session.id,
-        publishedAt: Date.now(),
+        publishedAt: new Date(),
       },
     });
+
+    console.log('mate I am dying a painful death: ', order)
     
     await strapi.service("api::course.course").update(course.id, {
       data: {
         orders: course.orders.concat(order.id),
-        students: course.students.concat(user.id),
         totalStudents: course.totalStudents + 1,
       },
     });
@@ -143,8 +136,9 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
 
     const course = await strapi.db.query("api::course.course").findOne({
       where: { id: entity.course.id },
-      populate: { students: true },
     });
+
+    const { user } = ctx.state;
 
     if (cancel) {
       await strapi
