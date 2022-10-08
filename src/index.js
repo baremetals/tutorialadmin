@@ -431,7 +431,7 @@ module.exports = {
       socket.on(
         "new group message",
         async (
-          { student, username, message, slug, group, file },
+          { student, username, message, slug, group, fileUrl: file },
           callback
         ) => {
           try {
