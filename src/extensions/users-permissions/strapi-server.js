@@ -275,6 +275,7 @@ module.exports = (plugin) => {
 
   const sendConfirmationEmail = async (user) => {
     // console.log(user, "I am in this bitch");
+    
 
     const userPermissionService = getService("users-permissions");
     const pluginStore = await strapi.store({

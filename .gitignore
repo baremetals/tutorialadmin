@@ -116,5 +116,6 @@ build
 .strapi-updater.json
 storagedb.json
 app.yaml
+app-dev.yaml
 /terraform
 .gcloudignore
