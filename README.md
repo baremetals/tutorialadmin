@@ -70,3 +70,6 @@ gcloud services enable cloudbuild.googleapis.com compute.googleapis.com
 
 **Build custom image**
   gcloud builds submit --tag gcr.io/baremetals-tutorial/strapi-dev/ver1
+
+App Engine
+gcloud app deploy app.yaml --project

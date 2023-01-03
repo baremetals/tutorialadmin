@@ -10,3 +10,6 @@ tf-sa.json
 terraform.tfstate
 terraform.tfstate.backup
 .terraform
+.env
+!include:.gitignore
+!.env
