@@ -39,11 +39,11 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
         // populate: { posts: true },
       });
 
-    if (findOrder.length > 0) {
+    if (findOrder.results.length > 0) {
       return ctx.throw(400, "You previously purchased this course");
     }
 
-    // console.log("going up");
+    console.log(findOrder);
     
     let session;
 
@@ -77,7 +77,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
     // Create the order
     const order = await strapi.service("api::order.order").create({
       data: {
-        user: user.id,
+        user: user.name,
         course: course.id,
         courseId: data.course,
         total: data.total,
@@ -90,7 +90,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
       },
     });
 
-    console.log('mate I am dying a painful death: ', order)
+    // console.log('mate I am dying a painful death: ', order)
     
     await strapi.service("api::course.course").update(course.id, {
       data: {

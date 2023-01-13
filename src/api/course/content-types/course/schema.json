@@ -113,6 +113,10 @@
     "private": {
       "type": "boolean",
       "default": false
+    },
+    "hasPrivateVersion": {
+      "type": "boolean",
+      "default": true
     }
   }
 }
