@@ -55,9 +55,6 @@
       "repeatable": false,
       "component": "seo.seo"
     },
-    "introduction": {
-      "type": "text"
-    },
     "level": {
       "type": "enumeration",
       "enum": [
@@ -117,6 +114,9 @@
     "hasPrivateVersion": {
       "type": "boolean",
       "default": true
+    },
+    "introduction": {
+      "type": "richtext"
     }
   }
 }

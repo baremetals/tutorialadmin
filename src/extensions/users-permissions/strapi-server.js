@@ -162,15 +162,12 @@ module.exports = (plugin) => {
 
   plugin.controllers.auth.register = async (ctx) => {
     
-
     const pluginStore = await strapi.store({
       type: "plugin",
       name: "users-permissions",
     });
 
-    const settings = await pluginStore.get({
-      key: "advanced",
-    });
+    const settings = await pluginStore.get({ key: "advanced" });
 
     if (!settings.allow_register) {
       throw new ApplicationError("Register action is currently disabled");
@@ -179,21 +176,15 @@ module.exports = (plugin) => {
     const params = {
       ..._.omit(ctx.request.body, [
         "confirmed",
+        "blocked",
         "confirmationToken",
         "resetPasswordToken",
+        "provider",
       ]),
       provider: "local",
     };
 
     await validateRegisterBody(params);
-
-    // Throw an error if the password selected by the user
-    // contains more than three times the symbol '$'.
-    if (getService("user").isHashed(params.password)) {
-      throw new ValidationError(
-        "Your password cannot contain more than three times the symbol `$`"
-      );
-    }
 
     const role = await strapi
       .query("plugin::users-permissions.role")
@@ -203,80 +194,124 @@ module.exports = (plugin) => {
       throw new ApplicationError("Impossible to find the default role");
     }
 
-    // Check if the provided email is valid or not.
-    const isEmail = emailRegExp.test(params.email);
+    const { email, username, provider } = params;
 
-    if (isEmail) {
-      params.email = params.email.toLowerCase();
-    } else {
-      throw new ValidationError("Please provide a valid email address");
+    const identifierFilter = {
+      $or: [
+        { email: email.toLowerCase() },
+        { username: email.toLowerCase() },
+        { username },
+        { email: username },
+      ],
+    };
+
+    const conflictingUserCount = await strapi
+      .query("plugin::users-permissions.user")
+      .count({
+        where: { ...identifierFilter, provider },
+      });
+    
+    if (conflictingUserCount > 0) {
+      throw new ApplicationError("Email or Username are already taken");
     }
 
-    params.role = role.id;
+    if (settings.unique_email) {
+      const conflictingUserCount = await strapi
+        .query("plugin::users-permissions.user")
+        .count({
+          where: { ...identifierFilter },
+        });
 
-    const user = await strapi.query("plugin::users-permissions.user").findOne({
-      where: { email: params.email },
+      if (conflictingUserCount > 0) {
+        throw new ApplicationError("Email or Username are already taken");
+      }
+    }
+
+    const newUser = {
+      ...params,
+      role: role.id,
+      email: email.toLowerCase(),
+      username,
+      confirmed: !settings.email_confirmation,
+    };
+
+    const user = await getService("user").add(newUser);
+
+    const sanitizedUser = await sanitizeUser(user, ctx);
+
+    if (settings.email_confirmation) {
+      try {
+        await sendConfirmationEmail(sanitizedUser);
+      } catch (err) {
+        throw new ApplicationError(err.message);
+      }
+
+      return ctx.send({ user: sanitizedUser });
+    }
+
+    const jwt = getService("jwt").issue(_.pick(user, ["id"]));
+
+    return ctx.send({
+      jwt,
+      user: sanitizedUser,
     });
 
-    if (user && user.provider === params.provider) {
-      throw new ApplicationError("Email is already taken");
-    }
+    
 
-    if (user && user.provider !== params.provider && settings.unique_email) {
-      throw new ApplicationError("Email is already taken");
-    }
 
-    try {
-      if (!settings.email_confirmation) {
-        params.confirmed = true;
-      }
+   
 
-      const usr = await getService("user").add(params);
+  
 
-      const sanitizedUser = await sanitizeUser(usr, ctx);
+    // try {
+    //   if (!settings.email_confirmation) {
+    //     params.confirmed = true;
+    //   }
 
-      if (settings.email_confirmation) {
-        try {
-          await sendConfirmationEmail(sanitizedUser);
-        } catch (err) {
-          throw new ApplicationError(err.message);
-        }
+    //   const usr = await getService("user").add(params);
 
-        return ctx.send({ user: sanitizedUser });
-      }
+    //   const sanitizedUser = await sanitizeUser(usr, ctx);
 
-      const jwt = getService("jwt").issue(_.pick(usr, ["id"]));
+    //   if (settings.email_confirmation) {
+    //     try {
+    //       await sendConfirmationEmail(sanitizedUser);
+    //     } catch (err) {
+    //       throw new ApplicationError(err.message);
+    //     }
 
-      return ctx.send({
-        jwt,
-        user: sanitizedUser,
-      });
-    } catch (err) {
-      // console.log("fucling print:", err.details.errors[0]);
-      // console.log("pagans print:", err);
-      if (
-        _.includes(
-          err.details.errors[0].message,
-          "This attribute must be unique"
-        )
-      ) {
-        // console.log("rass print", _.includes(err.details.errors[0]));
-        throw new ApplicationError("Username already taken");
-      } else if (_.includes(err.message, "email")) {
-        throw new ApplicationError("Email already taken");
-      }  else if (_.includes(err.message, "password")) {
-        throw new ApplicationError(err.message);
-      } else {
-        // strapi.log.error(err);
-        throw new ApplicationError("An error occurred during account creation");
-      }
-    }
+    //     return ctx.send({ user: sanitizedUser });
+    //   }
+
+    //   const jwt = getService("jwt").issue(_.pick(usr, ["id"]));
+
+    //   return ctx.send({
+    //     jwt,
+    //     user: sanitizedUser,
+    //   });
+    // } catch (err) {
+    //   // console.log("fucling print:", err.details.errors[0]);
+    //   // console.log("pagans print:", err);
+    //   if (
+    //     _.includes(
+    //       err.details.errors[0].message,
+    //       "This attribute must be unique"
+    //     )
+    //   ) {
+    //     // console.log("rass print", _.includes(err.details.errors[0]));
+    //     throw new ApplicationError("Username already taken");
+    //   } else if (_.includes(err.message, "email")) {
+    //     throw new ApplicationError("Email already taken");
+    //   }  else if (_.includes(err.message, "password")) {
+    //     throw new ApplicationError(err.message);
+    //   } else {
+    //     // strapi.log.error(err);
+    //     throw new ApplicationError("An error occurred during account creation");
+    //   }
+    // }
   }
 
   const sendConfirmationEmail = async (user) => {
     // console.log(user, "I am in this bitch");
-    
-
     const userPermissionService = getService("users-permissions");
     const pluginStore = await strapi.store({
       type: "plugin",
@@ -334,6 +369,28 @@ module.exports = (plugin) => {
       },
     };
 
+    const adminEmailTemplate = {
+      to: `${process.env.ADMIN_EMAIL}`, // recipient
+      from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender
+      template_id: "d-4af2d25542694429ad152637ff8b2d26",
+      dynamic_template_data: {
+        subject: `New User`,
+        username: "Daniel",
+        buttonText: "View User",
+        url: `${process.env.APP_URL}admin/content-manager/collectionType/plugin::users-permissions.user/${user.id}`,
+        firstLine: "A new user has created an account!",
+        secondLine: `${user.username}, Has registered! check what they do.`,
+      },
+    };
+    await sgMail
+      .send(adminEmailTemplate)
+      .then((res) => {
+        console.log("Email sent", res[0].statusCode);
+      })
+      .catch((error) => {
+        console.log(`Sending the verify email produced this error: ${error}`);
+      });
+
     // Send an email to the user.
     await sgMail
       .send(emailTemplate)
@@ -343,20 +400,6 @@ module.exports = (plugin) => {
       .catch((error) => {
         console.log(`Sending the verify email produced this error: ${error}`);
       });
-    // await strapi
-    //   .plugin("email")
-    //   .service("email")
-    //   .send({
-    //     to: user.email,
-    //     from:
-    //       settings.from.email && settings.from.name
-    //         ? `${settings.from.name} <${settings.from.email}>`
-    //         : undefined,
-    //     replyTo: settings.response_email,
-    //     subject: settings.object,
-    //     text: settings.message,
-    //     html: settings.message,
-    //   });
   };
 
   const edit = async (userId, params = {}) => {

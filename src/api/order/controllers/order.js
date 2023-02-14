@@ -43,7 +43,7 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
       return ctx.throw(400, "You previously purchased this course");
     }
 
-    console.log(findOrder);
+    // console.log(user.id);
     
     let session;
 
@@ -71,13 +71,12 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
       });
     } else session = "free-purchase";
 
-    // console.log(data);
 
 
     // Create the order
     const order = await strapi.service("api::order.order").create({
       data: {
-        user: user.name,
+        user: user.id,
         course: course.id,
         courseId: data.course,
         total: data.total,
@@ -99,30 +98,54 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
       },
     });
     
-    const emailTemplate = {
-      to: `${user.email}`, // recipient
-      from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender
-      template_id: "d-5ac156026533444c9c559dc29368f392",
-      dynamic_template_data: {
-        courseTitle: course.title,
-        subject: `Order Received`,
-        username: `${user.username}`,
-        buttonText: "View Order",
-        url: `${process.env.FRONT_END_HOST}home/orders`,
-        message: data.isFree
-          ? "Your order has been processed. You will receive details of the course by email."
-          : "Your order is being processed. You will receive payment confirmation shortly.",
-      },
-    };
-    
-    await sgMail
-      .send(emailTemplate)
-      .then(() => {
-        console.log("Email sent", res[0].statusCode);
-      })
-      .catch((error) => {
-        console.log(`Sending the verify email produced this error: ${error}`);
-      });
+    if (session === "free-purchase") {
+      const emailTemplate = {
+        to: `${user.email}`, // recipient
+        from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender
+        template_id: "d-5ac156026533444c9c559dc29368f392",
+        dynamic_template_data: {
+          courseTitle: course.title,
+          subject: `Order Received`,
+          username: `${user.username}`,
+          buttonText: "View Order",
+          url: `${process.env.FRONT_END_HOST}home/orders`,
+          message: data.isFree
+            ? "Your order has been processed. You will receive details of the course by email."
+            : "Your order is being processed. You will receive payment confirmation shortly.",
+        },
+      };
+      const adminEmailTemplate = {
+        to: `${process.env.ADMIN_EMAIL}`, // recipient
+        from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender
+        template_id: "d-5ac156026533444c9c559dc29368f392",
+        dynamic_template_data: {
+          courseTitle: course.title,
+          subject: `New Free Order Received`,
+          username: "Daniel",
+          buttonText: "View Order",
+          url: `${process.env.APP_URL}admin/content-manager/collectionType/api::order.order/${course.id}`,
+          message: `You have a new order from ${user.username}`,
+        },
+      };
+      await sgMail
+        .send(emailTemplate)
+        .then((res) => {
+          console.log("Email sent", res[0].statusCode);
+        })
+        .catch((error) => {
+          console.log(`Sending the verify email produced this error: ${error}`);
+        });
+      
+      await sgMail
+        .send(adminEmailTemplate)
+        .then((res) => {
+          console.log("Email sent", res[0].statusCode);
+        })
+        .catch((error) => {
+          console.log(`Sending the verify email produced this error: ${error}`);
+        });
+    }
+      
 
     return { id: data.isFree ? session : session.id };
   },
@@ -141,18 +164,31 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
     const { user } = ctx.state;
 
     if (cancel) {
-      await strapi
+      // console.log(entity.user)
+      strapi
         .service("api::order.order")
         .delete(entity.id);
-
-      const index = course.students.findIndex((st) => st.id === entity.user.id);
-      await strapi
-        .service("api::course.course")
-        .update(entity.course.id, {
-          data: {
-            students: course.students.splice(index, 1),
-            totalStudents: course.totalStudents - 1,
-          },
+      
+      const adminEmailTemplate = {
+        to: `${process.env.ADMIN_EMAIL}`, // recipient
+        from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender
+        template_id: "d-5ac156026533444c9c559dc29368f392",
+        dynamic_template_data: {
+          courseTitle: course.title,
+          subject: `Change of Mind`,
+          username: "Daniel",
+          buttonText: "View User",
+          url: `${process.env.APP_URL}admin/content-manager/collectionType/plugin::users-permissions.user/${user.id}`,
+          message: `${user.username}, cancel making a purchase. Find out why`,
+        },
+      };
+      await sgMail
+        .send(adminEmailTemplate)
+        .then((res) => {
+          console.log("Email sent", res[0].statusCode);
+        })
+        .catch((error) => {
+          console.log(`Sending the verify email produced this error: ${error}`);
         });
 
       return {success: 'order deleted'};
@@ -183,9 +219,32 @@ module.exports = createCoreController("api::order.order", ({ strapi }) => ({
         },
       };
 
+      const adminEmailTemplate = {
+        to: `${process.env.ADMIN_EMAIL}`, // recipient
+        from: "Bare Metals Academy. <noreply@baremetals.io>", // Change to verified sender
+        template_id: "d-5ac156026533444c9c559dc29368f392",
+        dynamic_template_data: {
+          courseTitle: course.title,
+          subject: `New Order Received`,
+          username: "Daniel",
+          buttonText: "View Order",
+          url: `${process.env.APP_URL}admin/content-manager/collectionType/api::order.order/${course.id}`,
+          message: `You have a new order from ${user.username}`,
+        },
+      };
+
       await sgMail
         .send(emailTemplate)
-        .then(() => {
+        .then((res) => {
+          console.log("Email sent", res[0].statusCode);
+        })
+        .catch((error) => {
+          console.log(`Sending the verify email produced this error: ${error}`);
+        });
+
+      await sgMail
+        .send(adminEmailTemplate)
+        .then((res) => {
           console.log("Email sent", res[0].statusCode);
         })
         .catch((error) => {
